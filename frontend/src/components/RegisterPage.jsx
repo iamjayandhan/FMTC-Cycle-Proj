@@ -12,16 +12,17 @@ const RegisterPage = () => {
   };
 
   // Handle guest registration
+
   const handleGuestRegister = (event) => {
     event.preventDefault();
     const mobileNumber = event.target.mobile.value;
-    
+
     // Check if mobile number is a 10-digit integer
     if (!/^\d{10}$/.test(mobileNumber)) {
       alert("Please enter a valid 10-digit mobile number.");
       return;
     }
-    
+
     // Your registration logic for guest users goes here
     // After successful registration, redirect to the login page
     navigate('/main');
@@ -40,8 +41,6 @@ const RegisterPage = () => {
         boxSizing: 'border-box',
       }}
     >
-      <p className='font-sherif'>This text uses font-family</p>
-
       <h1 style={{ textAlign: 'center', marginBottom: '20px', color: '#333333' }}>
         Cycle Project Registration
       </h1>
@@ -187,6 +186,23 @@ const RegisterPage = () => {
             Register as Guest
           </button>
         </form>
+      </div>
+
+      {/* Option to go to Login Page */}
+      <div style={{ marginTop: '20px' }}>
+        <p style={{ color: '#555555' }}>
+          Already have an account?{' '}
+          <span
+            style={{
+              color: '#007bff',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+            }}
+            onClick={() => navigate('/login')}
+          >
+            Login here
+          </span>
+        </p>
       </div>
     </div>
   );
