@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mapImage from '../assets/map image final.png'; // Adjust the path as needed
+import SA from '../assets/cyc.png';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -11,9 +12,9 @@ const MainPage = () => {
 
   // Stands with proportional positions (percentages relative to the container)
   const stands = [
-    { name: 'Stand A', top: '24.4%', left: '15.9%' },
-    { name: 'Stand B', top: '38.5%', left: '54.5%' },
-    { name: 'Stand C', top: '75.55%', left: '24%' },
+    { name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
+    { name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
+    { name: 'Stand C', top: '76.9%', left: '24%', image: SA },
   ];
 
   const handleLogout = () => {
@@ -22,7 +23,10 @@ const MainPage = () => {
 
   const handleStandClick = (standName) => {
     setSelectedStand(standName);
-    alert(`${standName} selected`);
+  };
+
+  const handleDropdownChange = (event) => {
+    setSelectedStand(event.target.value);
   };
 
   // Update map width when the map container resizes
@@ -107,7 +111,9 @@ const MainPage = () => {
 
         {/* Stand Placeholders with relative positioning */}
         {stands.map((stand, index) => {
-          const placeholderSize = mapWidth * 0.14; // Adjust placeholder size dynamically (10% of map width)
+          const placeholderSize = mapWidth * 0.14; // Adjust placeholder size dynamically
+          const isSelected = selectedStand === stand.name;
+
           return (
             <div
               key={index}
@@ -118,23 +124,87 @@ const MainPage = () => {
                 left: stand.left,
                 width: `${placeholderSize}px`, // Size relative to map width
                 height: `${placeholderSize}px`, // Maintain square aspect ratio
-                fontSize: 'clamp(16px, 5vw, 25px)', // Dynamically scale the font size
                 cursor: 'pointer',
-                color: '#ff4b5c',
-                transform: 'translate(-50%, -35%)',
+                transform: 'translate(-50%, -50%)',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                border: '2px solid #ff4b5c',
-                borderRadius: '25%',
-                backgroundColor: '#fff',
+                border: isSelected ? '3px solid #00ff00' : 'none', // Highlight selected stand
+                borderRadius: '8px',
+                boxShadow: isSelected ? '0px 0px 10px 2px rgba(0, 255, 0, 0.5)' : 'none',
               }}
             >
-              ▢
+              {stand.image ? (
+                <img
+                  src={stand.image}
+                  alt={stand.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    borderRadius: '8px',
+                  }}
+                />
+              ) : (
+                <div
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: '2px solid #ff4b5c',
+                    backgroundColor: '#fff',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  ▢
+                </div>
+              )}
+              {/* Stand name label, positioned above the image */}
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '-35px', // Adjust position above the image
+                  fontSize: 'clamp(12px, 2vw, 18px)',
+                  color: '#333',
+                  width: '160%',
+                  backgroundColor: '#fff',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  pointerEvents: 'none',
+                  boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                {stand.name}
+              </span>
             </div>
           );
         })}
       </div>
+
+      {/* Dropdown menu for selecting a stand */}
+      <select
+        value={selectedStand}
+        onChange={handleDropdownChange}
+        style={{
+          marginTop: '20px',
+          padding: '10px',
+          fontSize: '16px',
+          borderRadius: '4px',
+          border: '1px solid #ccc',
+          backgroundColor:'#ff4b5c',
+          width: '30%',
+          maxWidth: '300px',
+          textAlign: 'center',
+        }}
+      >
+        <option value="" disabled>Select</option>
+        {stands.map((stand, index) => (
+          <option key={index} value={stand.name}>
+            {stand.name}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };
