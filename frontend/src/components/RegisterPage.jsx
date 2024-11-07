@@ -87,12 +87,12 @@ const RegisterPage = () => {
         <form onSubmit={handleRegister}>
           <div style={{ marginBottom: '15px' }}>
             <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Roll No:</label>
-            <input name="rollNo" type="text" placeholder="Enter your roll number" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
+            <input name="rollNo" minLength={4} type="text" placeholder="Enter your roll number" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
 
           <div style={{ marginBottom: '15px' }}>
             <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Username:</label>
-            <input name="username" type="text" placeholder="Enter your username" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
+            <input name="username"  minLength={4} type="text" placeholder="Enter your username" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
 
           <div style={{ marginBottom: '15px' }}>
@@ -102,7 +102,7 @@ const RegisterPage = () => {
 
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Password:</label>
-            <input name="password" type="password" placeholder="Enter your password" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
+            <input name="password"  minLength={4} type="password" placeholder="Enter your password" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
 
           <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#007bff', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
@@ -121,7 +121,7 @@ const RegisterPage = () => {
           </div>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Password:</label>
-            <input name="password" type="password" placeholder="Enter your password" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
+            <input name="password" minLength={4} type="password" placeholder="Enter your password" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
           <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Register as Guest
