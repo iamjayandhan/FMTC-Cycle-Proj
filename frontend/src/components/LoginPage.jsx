@@ -1,4 +1,7 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import the styles for toast notifications
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -6,15 +9,35 @@ const LoginPage = () => {
   // Handle login submission
   const handleLogin = (event) => {
     event.preventDefault();
-    // Your authentication logic goes here
-    // Example: Perform validation or API request
-    // If login is successful, navigate to the main page
-    navigate('/main');
+
+    // Placeholder logic for authentication
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+
+    // Here you can add your actual authentication logic
+    if (email === 'jd@gmail.com' && password === '123') {
+      // Success toast
+      toast.success('Login Successful! Redirecting...', {
+        position: 'top-center',
+        autoClose: 2000, // Automatically close after 2 seconds
+      });
+      
+      // Redirect to the main page after a delay (e.g., to let the toast show)
+      setTimeout(() => {
+        navigate('/main');
+      }, 2000); // 2 seconds delay for the toast to show
+    } else {
+      // Error toast
+      toast.error('Invalid credentials. Please try again.', {
+        position: 'top-center',
+        autoClose: 3000, // Automatically close after 3 seconds
+      });
+    }
   };
 
   // Navigate to the registration page
   const handleRegister = () => {
-    navigate('/register'); // Replace '/register' with the path to your registration page
+    navigate('/register');
   };
 
   return (
@@ -47,7 +70,7 @@ const LoginPage = () => {
           boxSizing: 'border-box',
         }}
       >
-        <h2 style={{ fontSize:30, marginBottom: '15px', color: '#333333' }}>Welcome Back!</h2>
+        <h2 style={{ fontSize: 30, marginBottom: '15px', color: '#333333' }}>Welcome Back!</h2>
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: '15px' }}>
             <label
@@ -58,6 +81,7 @@ const LoginPage = () => {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
               placeholder="Enter your email"
               required
@@ -84,6 +108,7 @@ const LoginPage = () => {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
               placeholder="Enter your password"
               required
@@ -140,6 +165,9 @@ const LoginPage = () => {
           </button>
         </p>
       </div>
+
+      {/* Toast Notification Container */}
+      <ToastContainer />
     </div>
   );
 };

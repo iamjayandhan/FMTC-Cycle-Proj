@@ -1,207 +1,150 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const serverUrl = 'https://your-server-url.com/api/register'; // Replace with your server URL
 
-  // Handle regular registration
-  const handleRegister = (event) => {
+  const handleRegister = async (event) => {
     event.preventDefault();
-    // Your registration logic for regular users goes here
-    // After successful registration, redirect to the login page
-    navigate('/login');
+
+    const rollNo = event.target.rollNo.value;
+    const username = event.target.username.value;
+    const mobile = event.target.mobile.value;
+    const password = event.target.password.value;
+
+    try {
+      const response = await fetch(serverUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include' ,
+        body: JSON.stringify({ rollNo, username, mobile, password }),
+      });
+
+      if (response.ok) {
+        toast.success('Registration successful!');
+        navigate('/login'); // Redirect to login page on success
+      } else {
+        const errorData = await response.json();
+        toast.error(`Registration failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      toast.error('Error: Unable to register. Please try again.');
+    }
   };
 
-  // Handle guest registration
-
-  const handleGuestRegister = (event) => {
+  const handleGuestRegister = async (event) => {
     event.preventDefault();
-    const mobileNumber = event.target.mobile.value;
 
-    // Check if mobile number is a 10-digit integer
+    const mobileNumber = event.target.mobile.value;
+    const password = event.target.password.value;
+
     if (!/^\d{10}$/.test(mobileNumber)) {
-      alert("Please enter a valid 10-digit mobile number.");
+      toast.warn('Please enter a valid 10-digit mobile number.');
       return;
     }
 
-    // Your registration logic for guest users goes here
-    // After successful registration, redirect to the login page
-    navigate('/main');
+    try {
+      const response = await fetch(`${serverUrl}/guest`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mobile: mobileNumber, password }),
+      });
+
+      if (response.ok) {
+        toast.success('Guest registration successful!');
+        navigate('/main'); // Redirect to main page on success
+      } else {
+        const errorData = await response.json();
+        toast.error(`Guest registration failed: ${errorData.message}`);
+      }
+    } catch (error) {
+      toast.error('Error: Unable to register as guest. Please try again.');
+    }
   };
 
+  const handleLogin = () => {
+    navigate('/login'); // Replace '/register' with the path to your registration page
+  };
+
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#f4f6f9',
-        padding: '20px',
-        boxSizing: 'border-box',
-      }}
-    >
-      <h1 style={{ textAlign: 'center', marginBottom: '20px', color: '#333333' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#f4f6f9', padding: '20px', boxSizing: 'border-box' }}>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      <h1 style={{ fontSize: '40px', textAlign: 'center', marginBottom: '20px', color: '#333333' }}>
         Cycle Project Registration
       </h1>
 
       {/* Register Card */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          margin: '10px 0',
-          padding: '20px',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px',
-          backgroundColor: '#ffffff',
-          boxSizing: 'border-box',
-        }}
-      >
+      <div style={{ width: '100%', maxWidth: '400px', margin: '10px 0', padding: '20px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', borderRadius: '8px', backgroundColor: '#ffffff', boxSizing: 'border-box' }}>
         <h2 style={{ marginBottom: '15px', color: '#333333' }}>Register</h2>
         <form onSubmit={handleRegister}>
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>
-              Email:
-            </label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              required
-              style={{
-                width: '100%',
-                padding: '10px',
-                boxSizing: 'border-box',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                backgroundColor: '#f1f3f5',
-                color: 'black',
-              }}
-            />
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Roll No:</label>
+            <input name="rollNo" type="text" placeholder="Enter your roll number" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Username:</label>
+            <input name="username" type="text" placeholder="Enter your username" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
+          </div>
+
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Mobile:</label>
+            <input name="mobile" type="text" placeholder="Enter your 10-digit mobile number" required pattern="[0-9]{10}" maxLength="10" style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
+          </div>
+
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>
-              Password:
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              required
-              style={{
-                width: '100%',
-                padding: '10px',
-                boxSizing: 'border-box',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                backgroundColor: '#f1f3f5',
-                color: 'black',
-              }}
-            />
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Password:</label>
+            <input name="password" type="password" placeholder="Enter your password" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '10px',
-              backgroundColor: '#007bff',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
+
+          <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#007bff', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Register
           </button>
         </form>
       </div>
 
       {/* Guest Register Card */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '400px',
-          margin: '10px 0',
-          padding: '20px',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-          borderRadius: '8px',
-          backgroundColor: '#ffffff',
-          boxSizing: 'border-box',
-        }}
-      >
+      <div style={{ width: '100%', maxWidth: '400px', margin: '10px 0', padding: '20px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', borderRadius: '8px', backgroundColor: '#ffffff', boxSizing: 'border-box' }}>
         <h2 style={{ marginBottom: '15px', color: '#333333' }}>Register as Guest</h2>
         <form onSubmit={handleGuestRegister}>
           <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>
-              Mobile:
-            </label>
-            <input
-              type="text"
-              name="mobile"
-              placeholder="Enter your mobile number"
-              required
-              pattern="\d{10}"
-              title="Please enter a valid 10-digit mobile number."
-              style={{
-                width: '100%',
-                padding: '10px',
-                boxSizing: 'border-box',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                backgroundColor: '#f1f3f5',
-                color: 'black',
-              }}
-            />
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Mobile:</label>
+            <input name="mobile" type="text" placeholder="Enter your mobile number" required pattern="\d{10}" title="Please enter a valid 10-digit mobile number." style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>
-              Password:
-            </label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              required
-              style={{
-                width: '100%',
-                padding: '10px',
-                boxSizing: 'border-box',
-                border: '1px solid #d1d5db',
-                borderRadius: '4px',
-                backgroundColor: '#f1f3f5',
-                color: 'black',
-              }}
-            />
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Password:</label>
+            <input name="password" type="password" placeholder="Enter your password" required style={{ width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #d1d5db', borderRadius: '4px', backgroundColor: '#f1f3f5', color: 'black' }} />
           </div>
-          <button
-            type="submit"
-            style={{
-              width: '100%',
-              padding: '10px',
-              backgroundColor: '#28a745',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
+          <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#28a745', color: '#ffffff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
             Register as Guest
           </button>
         </form>
-      </div>
 
-      {/* Option to go to Login Page */}
-      <div style={{ marginTop: '20px' }}>
-        <p style={{ color: '#555555' }}>
+        {/* Register Option */}
+        <p style={{ marginTop: '20px', color: '#333333', textAlign: 'center' }}>
           Already have an account?{' '}
-          <span
+          <button
+            onClick={handleLogin}
             style={{
+              background: 'none',
+              border: 'none',
               color: '#007bff',
               cursor: 'pointer',
               textDecoration: 'underline',
+              padding: '0',
+              fontSize: 'inherit',
             }}
-            onClick={() => navigate('/login')}
           >
-            Login here
-          </span>
+            Login
+          </button>
         </p>
       </div>
     </div>
