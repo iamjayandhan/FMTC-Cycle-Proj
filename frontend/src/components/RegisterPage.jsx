@@ -10,9 +10,9 @@ const RegisterPage = () => {
   const handleRegister = async (event) => {
     event.preventDefault();
 
-    const rollNo = event.target.rollNo.value;
-    const username = event.target.username.value;
-    const mobile = event.target.mobile.value;
+    const rollNumber = event.target.rollNo.value;
+    const userName = event.target.username.value;
+    const mobile = "" + event.target.mobile.value;
     const password = event.target.password.value;
 
     try {
@@ -22,7 +22,7 @@ const RegisterPage = () => {
           'Content-Type': 'application/json',
         },
         credentials: 'include' ,
-        body: JSON.stringify({ rollNo, username, mobile, password }),
+        body: JSON.stringify({ rollNumber, userName, mobile, password }),
       });
 
       if (response.ok) {
