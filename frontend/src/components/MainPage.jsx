@@ -1,73 +1,58 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mapImage from '../assets/map image final.png'; // Adjust the path as needed
 
 const MainPage = () => {
   const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false); // State to show modal
-  const [modalMessage, setModalMessage] = useState(''); // State for modal message
-  const [selectedStand, setSelectedStand] = useState(''); // State for selected stand
-  const imageRef = useRef(null); // Reference to the image element
+  const [selectedStand, setSelectedStand] = useState('');
+  const [mapWidth, setMapWidth] = useState(0); // To track map width
+  const mapContainerRef = useRef(null); // Reference for the map container
 
-  // Define rectangular areas with top-left and bottom-right coordinates
-  const areas = [
-    { name: 'Stand A', x1: 10, y1: 100, x2: 90, y2: 140 }, // Rectangle for Stand A
-    { name: 'Stand B', x1: 150, y1: 150, x2: 230, y2: 200 }, // Rectangle for Stand B
-    { name: 'Stand C', x1: 57.19999885559082, y1: 324.8874816894531, x2: 103.19999885559082, y2: 373.8874816894531 }, // Rectangle for Stand C
+  // Stands with proportional positions (percentages relative to the container)
+  const stands = [
+    { name: 'Stand A', top: '24.4%', left: '15.9%' },
+    { name: 'Stand B', top: '38.5%', left: '54.5%' },
+    { name: 'Stand C', top: '75.55%', left: '24%' },
   ];
 
   const handleLogout = () => {
-    // Redirect to the Login page on logout
     navigate('/login');
   };
 
-  // Function to handle clicks on the image map areas
-  const handleAreaClick = (e) => {
-    const img = imageRef.current;
+  const handleStandClick = (standName) => {
+    setSelectedStand(standName);
+    alert(`${standName} selected`);
+  };
 
-    // Get the click position relative to the image
-    const rect = img.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Check if the click is within any defined rectangular area
-    for (let area of areas) {
-      if (
-        x >= area.x1 && x <= area.x2 &&  // Check X range
-        y >= area.y1 && y <= area.y2      // Check Y range
-      ) {
-        // Update the state for selected stand and show modal
-        setSelectedStand(area.name);
-        setModalMessage(`${area.name} clicked at position: x=${x}, y=${y}`);
-        setShowModal(true);
-        return; // Exit after showing the first matched area
+  // Update map width when the map container resizes
+  useEffect(() => {
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapContainerRef.current) {
+        setMapWidth(mapContainerRef.current.offsetWidth);
       }
+    });
+    
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
     }
-
-    // If clicked outside predefined areas, do not trigger an alert (no action)
-    setShowModal(false);
-  };
-
-  // Handle Dropdown Change
-  const handleDropdownChange = (event) => {
-    setSelectedStand(event.target.value); // Update selected stand state
-  };
+    
+    return () => {
+      resizeObserver.disconnect(); // Cleanup observer on component unmount
+    };
+  }, []);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#ffffff',
-        padding: '20px',
-        boxSizing: 'border-box',
-        position: 'relative',
-      }}
-    >
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      minHeight: '100vh',
+      padding: '20px',
+      position: 'relative',
+      boxSizing: 'border-box',
+      backgroundColor:'#ffffff',
+    }}>
       {/* Logout Button */}
       <button
         onClick={handleLogout}
@@ -86,101 +71,70 @@ const MainPage = () => {
         Logout
       </button>
 
-      <h1 className="font-bona" style={{ marginTop: '40px', textAlign: 'center', color: '#333333' }}>
+      <h1 style={{ marginTop: '40px', textAlign: 'center', color: '#333' }}>
         Welcome user!
       </h1>
-      <p style={{ textAlign: 'center', color: '#666666', marginTop: '10px' }}>
+      <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>
         Please choose the preferred stand and cycle below!
       </p>
 
-      {/* College Map Image with interactive areas */}
+      {/* Map container with responsive sizing */}
       <div
+        ref={mapContainerRef}
         style={{
-          marginTop: '60px', // Space below the logout button
-          padding: '4px',
-          backgroundColor: '#b20d0d',
-          borderRadius: '4px',
-          border: '1px solid #d1d5db',
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-          textAlign: 'center',
+          position: 'relative',
+          width: '70vw',
+          maxWidth: '700px',
+          marginTop: '20px',
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          border:'2px solid black',
+          overflow: 'hidden',
+          height: 'auto',
+          boxSizing: 'border-box',
         }}
       >
         <img
-          ref={imageRef}
           src={mapImage}
           alt="College Map"
-          style={{ maxWidth: '100%', height: 'auto', borderRadius: '4px' }}
-          onClick={handleAreaClick} // Trigger the area click function
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+            borderRadius: '8px',
+          }}
         />
-      </div>
 
-      {/* Dropdown to select Stand */}
-      <div style={{ marginTop: '20px' }}>
-        <label htmlFor="stand-dropdown" style={{ fontSize: '16px', marginRight: '10px' }}>
-          Select Stand:
-        </label>
-        <select
-          id="stand-dropdown"
-          value={selectedStand}
-          onChange={handleDropdownChange}
-          style={{
-            padding: '8px',
-            borderRadius: '4px',
-            border: '1px solid #d1d5db',
-            fontSize: '16px',
-          }}
-        >
-          <option value="">--Select Stand--</option>
-          <option value="Stand A">Stand A</option>
-          <option value="Stand B">Stand B</option>
-          <option value="Stand C">Stand C</option>
-        </select>
-      </div>
-
-      {/* Custom Modal for showing popup */}
-      {showModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            right: '0',
-            bottom: '0',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: '1000',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '300px',
-              textAlign: 'center',
-              color: 'black',
-            }}
-          >
-            <h3>{modalMessage}</h3>
-            <button
-              onClick={() => setShowModal(false)}
+        {/* Stand Placeholders with relative positioning */}
+        {stands.map((stand, index) => {
+          const placeholderSize = mapWidth * 0.14; // Adjust placeholder size dynamically (10% of map width)
+          return (
+            <div
+              key={index}
+              onClick={() => handleStandClick(stand.name)}
               style={{
-                marginTop: '20px',
-                backgroundColor: '#ff4b5c',
-                color: 'white',
-                padding: '10px',
-                border: 'none',
-                borderRadius: '4px',
+                position: 'absolute',
+                top: stand.top,
+                left: stand.left,
+                width: `${placeholderSize}px`, // Size relative to map width
+                height: `${placeholderSize}px`, // Maintain square aspect ratio
+                fontSize: 'clamp(16px, 5vw, 25px)', // Dynamically scale the font size
                 cursor: 'pointer',
+                color: '#ff4b5c',
+                transform: 'translate(-50%, -35%)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                border: '2px solid #ff4b5c',
+                borderRadius: '25%',
+                backgroundColor: '#fff',
               }}
             >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+              ▢
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
