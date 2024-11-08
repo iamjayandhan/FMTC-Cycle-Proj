@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+const apiUrl = import.meta.env.VITE_API_URL
+console.log(apiUrl);
 const RegisterPage = () => {
   const navigate = useNavigate();
-  const serverUrl = 'https://your-server-url.com/api/register'; // Replace with your server URL
+  const serverUrl = `${apiUrl}/users`; // Replace with your server URL
 
   const handleRegister = async (event) => {
     event.preventDefault();
@@ -26,8 +28,12 @@ const RegisterPage = () => {
       });
 
       if (response.ok) {
+        const responseData = await response.json();
+        console.log(responseData);
         toast.success('Registration successful!');
-        navigate('/login'); // Redirect to login page on success
+        setTimeout(() => {
+          navigate('/login');
+        }, 1000); 
       } else {
         const errorData = await response.json();
         toast.error(`Registration failed: ${errorData.message}`);
