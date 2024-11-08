@@ -28,7 +28,7 @@ const RegisterPage = () => {
     const { rollNumber, userName, mobile, password, passnumber } = formData;
     const body = isStudent
       ? { rollNumber, userName, mobile, password }
-      : { passnumber, password };
+      : { passnumber, mobile, password };  // Include mobile for guests
 
     const endpoint = isStudent ? `${apiUrl}/users` : `${apiUrl}/users/guest`;
 
@@ -56,7 +56,6 @@ const RegisterPage = () => {
 
   const handleLogin = () => navigate('/login');
 
-  // Styles object for cleaner styling
   const styles = {
     container: {
       display: 'flex',
@@ -118,13 +117,11 @@ const RegisterPage = () => {
         Cycle Project Registration
       </h1>
 
-      {/* Toggle Button */}
       <div style={styles.toggleContainer}>
         <button onClick={() => setIsStudent(true)} style={styles.button(isStudent)}>Student</button>
         <button onClick={() => setIsStudent(false)} style={styles.button(!isStudent)}>Guest</button>
       </div>
 
-      {/* Registration Form */}
       <div style={styles.formContainer}>
         <h2 style={{ marginBottom: '15px', color: '#333333' }}>
           {isStudent ? 'Register as Student' : 'Register as Guest'}
@@ -158,22 +155,23 @@ const RegisterPage = () => {
                   style={styles.input}
                 />
               </div>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Mobile:</label>
-                <input
-                  name="mobile"
-                  type="text"
-                  placeholder="Enter your 10-digit mobile number"
-                  value={formData.mobile}
-                  onChange={handleInputChange}
-                  required
-                  pattern="\d{10}"
-                  maxLength="10"
-                  style={styles.input}
-                />
-              </div>
             </>
           )}
+          {/* Mobile Field for Both Student and Guest */}
+          <div style={{ marginBottom: '15px' }}>
+            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Mobile:</label>
+            <input
+              name="mobile"
+              type="text"
+              placeholder="Enter your 10-digit mobile number"
+              value={formData.mobile}
+              onChange={handleInputChange}
+              required
+              pattern="\d{10}"
+              maxLength="10"
+              style={styles.input}
+            />
+          </div>
           {!isStudent && (
             <div style={{ marginBottom: '15px' }}>
               <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Passnumber:</label>
@@ -205,7 +203,6 @@ const RegisterPage = () => {
           <button type="submit" style={styles.submitButton}>Register</button>
         </form>
 
-        {/* Register Option */}
         <p style={{ marginTop: '20px', color: '#333333', textAlign: 'center' }}>
           Already have an account?{' '}
           <button
