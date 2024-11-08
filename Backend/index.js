@@ -8,7 +8,11 @@ const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleware')
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow only this origin
+    methods: 'GET,POST', // Specify allowed methods
+    credentials: true // Enable cookies and other credentials
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

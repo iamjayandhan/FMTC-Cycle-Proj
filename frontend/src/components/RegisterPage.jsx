@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-console.log(import.meta.env.VITE_API_URL)
+
 const apiUrl = import.meta.env.VITE_API_URL
-console.log(apiUrl)
+console.log(apiUrl);
 const RegisterPage = () => {
   const navigate = useNavigate();
   const serverUrl = `${apiUrl}/users`; // Replace with your server URL
-  const [isStudent, setIsStudent] = useState(true); // Toggle state, "Student" as default
 
   const handleRegister = async (event) => {
     event.preventDefault();
@@ -41,10 +40,12 @@ const RegisterPage = () => {
       });
 
       if (response.ok) {
-        const responseData = await response.json(); // Convert response to JSON
-        console.log(responseData); // Log or use the response data if needed
-        toast.success(`${isStudent ? 'Student' : 'Guest'} registration successful!`);
-        navigate(isStudent ? '/login' : '/main'); // Redirect accordingly
+        const responseData = await response.json();
+        console.log(responseData);
+        toast.success('Registration successful!');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1000); 
       } else {
         const errorData = await response.json();
         toast.error(`Registration failed: ${errorData.message}`);
