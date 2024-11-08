@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt');
 const {v4: uuidv4} = require('uuid');
 
 const userModels = require('../models/userModels');
-const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');
+const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');4
+const genToken = require('../utils/jwtUtils');
 
 /**
  * Handles user registration.
@@ -64,6 +65,65 @@ async function userRegisterController(req, res, next) {
     
 }
 
+/**
+ * Authenticates user credentials and logs the user in.
+ * Verifies roll number and password, generates a JWT if valid, 
+ * and sets it as a secure HTTP-only cookie in the response.
+ * 
+ * @async
+ * @function userLogin
+ * 
+ * @param {Object} req - Express request object, containing user credentials.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @throws {AppError} - If required fields are missing or invalid.
+ * 
+ * @returns {void} - Sends JSON response with login status.
+ */
+
+async function userLogin(req, res, next) {
+    try {
+        const { rollNumber, password } = req.body;
+
+        if (!rollNumber || !password) {
+            throw createErrorResponse({
+                message: 'Missing required fields.',
+                statusCode: 400,
+                description: 'Roll number and password are required fields.',
+                suggestedAction: 'Please provide both rollNumber and password.'
+            });
+        }
+    
+        if(rollNumber.length < 4 || password.length < 4) {
+            throw createErrorResponse({
+                message: 'Invalid field lengths.',
+                statusCode: 400,
+                description: 'Roll Number and Password must be at least 4 characters long.',
+                suggestedAction: 'Ensure Roll Number and Password meet the minimum length requirements.'
+            });
+        }
+    
+        const response = await userModels.verifyCredentials(rollNumber, password);
+
+        const token = await genToken(response.data);
+
+        res.cookie('JTOK', token, { 
+            maxAge: 1000 * 60 * 60 * 2, 
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+        });
+
+        res.status(200).json({
+            message: 'User logged in successfully.',
+            statusCode: 200,
+            description: 'User logged in; JWT token set in cookie.',
+        });      
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     userRegisterController,
+    userLogin,
 }

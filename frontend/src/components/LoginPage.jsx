@@ -4,10 +4,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+console.log(apiUrl)
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ rollNumber: '', password: '' });
 
   const handleInputChange = (e) => {
     setFormData({
@@ -20,14 +21,17 @@ const LoginPage = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(`${apiUrl}/login`, {
+      const response = await fetch(`${apiUrl}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
-      });
+        credentials: 'include',
+      }
+    );
 
       if (response.ok) {
         const responseData = await response.json();
+        console.log(responseData);
         toast.success('Login Successful! Redirecting...', {
           position: 'top-center',
           autoClose: 2000,
@@ -92,14 +96,14 @@ const LoginPage = () => {
                 htmlFor="username"
                 style={{ display: 'block', marginBottom: '5px', color: '#333333' }}
               >
-                Username:
+                Roll Number:
               </label>
               <input
-                id="username"
-                name="username"
+                id="rollNumber"
+                name="rollNumber"
                 type="text"
-                placeholder="Enter your username"
-                value={formData.username}
+                placeholder="Enter your Roll Number"
+                value={formData.rollNumber}
                 onChange={handleInputChange}
                 required
                 style={{
