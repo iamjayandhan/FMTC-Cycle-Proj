@@ -14,7 +14,7 @@ function verifyToken(req, res, next) {
             suggestedAction: 'Try login with your user Roll Number and password.'
         });
 
-        next(error);
+        return next(error);
     }
 
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
