@@ -18,8 +18,8 @@ const MainPage = () => {
   const [selectedStand, setSelectedStand] = useState('');
   
   //cycle
-  const [cycles, setCycles] = useState([]);
-  const [availableCount, setAvailableCount] = useState(0);
+  const [cycles, setCycles] = useState({});
+  const [availableCount, setAvailableCount] = useState("");
   const [isCyclePopupVisible, setIsCyclePopupVisible] = useState(false);
 
   const stands = [
@@ -36,16 +36,13 @@ const MainPage = () => {
   };
 
   const handleStandClick = (standId) => {
-    setSelectedStand(standId.toString()); // Update selected stand by ID
+    setSelectedStand(standId.toString());
   };
   
-  // Dropdown change handler
   const handleDropdownChange = (event) => {
     const selectedStandId = event.target.value;
-    setSelectedStand(selectedStandId); // Ensure this sets the ID too
+    setSelectedStand(selectedStandId);
   };
-  
-  
 
   // USEEFFECT => Update map width when the map container resizes
   useEffect(() => {
@@ -64,11 +61,10 @@ const MainPage = () => {
     };
   }, []);
 
-
   // USE EFFECT => Fetch user booking status when enters main page.
   useEffect(() => {
-      fetch(`http://localhost:8080/api/v1/users/main`, {
-        method: 'POST',
+      fetch('http://localhost:8080/api/v1/users/main', {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -76,65 +72,66 @@ const MainPage = () => {
       })
         .then(response => response.json())
         .then(data => {
+          console.log(data)
           const { message, description } = data;
           if (message !== 'ok') {
             setPopupDescription(description);
             setIsPopupVisible(true); 
+            console.log("User already have a ride to complete");
+          } else {
+            console.log(data.data);
+            setAvailableCount(data.data.availability);
+            setCycles(data.data.cycles);
           }
-          console.log("User already have a ride to complete");
         })
         .catch(error => {
           console.log("User side Error");
           console.error("Error fetching user booking status:", error);
-
-          //testing!
-          // setPopupDescription('You already have a ride to complete. Kindly leave the previously booked cycle before going for new booking.');
-          // setIsPopupVisible(true); 
         });
   }, []);
 
 // USE EFFECT => Fetch cycle details from stand
-useEffect(() => {
-  if (selectedStand) {
-    const timer = setTimeout(() => {
-      fetch(`http://localhost:8080/api/v1/stand/${selectedStand}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          const { message, available, cycles } = data;
-          if (available === 0) {
-            setPopupDescription(message || 'No cycles available at this stand.');
-            setIsCyclePopupVisible(true);
-            console.log("No cycles available at this stand.");
-          } else if (available > 0) {
-            setCycles(cycles);
-            setAvailableCount(cycles.length); 
-            setIsCyclePopupVisible(true);
-            console.log("Total cycle available count: ", availableCount);
-            console.log("List of cycles by their names: ", cycles);
-          }
-        })
-        .catch(error => {
-          console.log("Cycle details fetch error.");
-          console.error("Error fetching cycle availability:", error);
-          console.log(selectedStand);
-        });
-    }, 2000);
+// useEffect(() => {
+//   if (selectedStand) {
+//     const timer = setTimeout(() => {
+//       fetch(http://localhost:8080/api/v1/stand/${selectedStand}, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       })
+//         .then(response => response.json())
+//         .then(data => {
+//           const { message, available, cycles } = data;
+//           if (available === 0) {
+//             setPopupDescription(message || 'No cycles available at this stand.');
+//             setIsCyclePopupVisible(true);
+//             console.log("No cycles available at this stand.");
+//           } else if (available > 0) {
+//             setCycles(cycles);
+//             setAvailableCount(cycles.length); 
+//             setIsCyclePopupVisible(true);
+//             console.log("Total cycle available count: ", availableCount);
+//             console.log("List of cycles by their names: ", cycles);
+//           }
+//         })
+//         .catch(error => {
+//           console.log("Cycle details fetch error.");
+//           console.error("Error fetching cycle availability:", error);
+//           console.log(selectedStand);
+//         });
+//     }, 2000);
     
-    return () => clearTimeout(timer);
-  }
-}, [selectedStand]);
+//     return () => clearTimeout(timer);
+//   }
+// }, [selectedStand]);
 
-// Ensure the popup visibility updates when cycles or availableCount change
-useEffect(() => {
-  if (cycles.length > 0 || availableCount > 0) {
-    setIsCyclePopupVisible(true);
-  }
-}, [cycles, availableCount]);
+  // Ensure the popup visibility updates when cycles or availableCount change
+  useEffect(() => {
+    if (cycles.length > 0 || availableCount > 0) {
+      setIsCyclePopupVisible(true);
+    }
+  }, [cycles, availableCount]);
 
 
   
@@ -142,7 +139,7 @@ useEffect(() => {
   //FUNC => Fetch cycle's availability
   const handleUnlockClick = (cycleName) => {
     // Send the selected cycle to the backend
-    fetch(`http://localhost:8080/api/v1/cycle/${cycleName}`, {
+    fetch('http://localhost:8080/api/v1/cycle/${cycleName}', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -381,29 +378,31 @@ useEffect(() => {
 
 
           <h3 style={{ marginBottom:'20px'}}>Total Cycles Available: {availableCount}</h3>
-                      {cycles && cycles.length > 0 && (
+                      {cycles && Object.keys(cycles).length > 0 && (
               <div style={{ marginTop: '20px' }}>
                 <h3>Available Cycles:</h3>
                 <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {cycles.map((cycle) => (
-                    <li key={cycle.id} style={{ marginBottom: '10px' }}>
-                      <span>{cycle.name}</span>
+                {Object.entries(cycles).map(([key, value]) => (
+                  <li key={value} style={{ marginBottom: '10px' }}>
+                      <span>{key}</span>
                       <button
-                        onClick={() => handleUnlockClick(cycle.id)} 
-                        style={{
-                          marginLeft: '10px',
-                          padding: '5px 10px',
-                          backgroundColor: '#4CAF50',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                        }}
+                          onClick={() => handleUnlockClick(value)}  // Using value directly
+                          style={{
+                              marginLeft: '10px',
+                              padding: '5px 10px',
+                              backgroundColor: '#4CAF50',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                          }}
                       >
-                        Unlock
+                          Unlock
                       </button>
-                    </li>
-                  ))}
+                  </li>
+              ))}
+
+
                 </ul>
               </div>
             )}
