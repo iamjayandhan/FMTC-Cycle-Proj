@@ -37,12 +37,10 @@ class AppError extends Error {
      */
     toResponseFormat() {
         return {
-            error: {
-                statusCode: this.statusCode,
-                message: this.message,
-                description: this.description,
-                suggestedAction: this.suggestedAction
-            },
+            statusCode: this.statusCode,
+            message: this.message,
+            description: this.description,
+            suggestedAction: this.suggestedAction,
         };
     }
 }
