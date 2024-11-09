@@ -88,7 +88,37 @@ async function verifyCredentials(rollNumber, password) {
     }
 }
 
+async function checkCurrUsage(userId) {
+    const currUsageRef = firebaseDb.collection('usage-logs').where('userId', '==', userId);
+    const querySnapShot = await currUsageRef.get();
+
+    if (!querySnapShot.empty) {
+        const currUsageDoc = querySnapShot.docs[0];
+        const currUsageData = currUsageDoc.data();
+
+        if (currUsageData.status) {
+            throw createErrorResponse({
+                message: 'Resource not available.',
+                statusCode: 409,
+                description: `User Currently riding the cycle: ${currUsageData.cycle.cycleNo}`,
+                suggestedAction: 'Please leave the cycle in stand, and book again.'
+            });
+        } else {
+            return {
+                message: 'User is Ideal',
+                status: 'ideal'
+            };
+        }
+    } else {
+        return {
+            message: 'User is Ideal',
+            status: 'ideal'
+        };
+    }
+}
+
 module.exports = {
     userRegistration,
     verifyCredentials,
+    checkCurrUsage,
 }

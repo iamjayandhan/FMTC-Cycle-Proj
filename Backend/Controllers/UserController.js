@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const {v4: uuidv4} = require('uuid');
 
 const userModels = require('../models/userModels');
+const standModels = require('../models/standModels');
 const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');4
 const genToken = require('../utils/jwtUtils');
 
@@ -123,7 +124,23 @@ async function userLogin(req, res, next) {
     }
 }
 
+async function getInitialStand(req, res, next) {
+    try {
+        const user = req.user;
+
+        const userCurrStatus = await userModels.checkCurrUsage(user.userId);
+    
+        if (userCurrStatus.status === 'ideal') {
+            const standDetails = await standModels.getStandDetails('1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0');
+            res.status(standDetails.statusCode).json(standDetails);
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     userRegisterController,
     userLogin,
+    getInitialStand,
 }
