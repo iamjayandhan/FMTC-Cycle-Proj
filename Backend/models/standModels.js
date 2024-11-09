@@ -2,8 +2,17 @@ const firebaseDb = require('../confs/dbConfig').db;
 
 const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');
 
+/**
+ * Retrieves details of a specified stand from the Firestore database.
+ * Returns a success response with stand data if found; otherwise, throws an error.
+ * 
+ * @async
+ * @function getStandDetails
+ * @param {string} standId - The unique identifier of the stand to retrieve.
+ * @returns {Promise<object>} - A Promise that resolves to an object with stand details if found.
+ * @throws {AppError} - Throws an error response if the stand does not exist in the database.
+ */
 async function getStandDetails(standId) {
-    console.log('reaching')
     const standRef = firebaseDb.collection('stands').where('standId', '==', standId);
     const standSnapShot = await standRef.get();
 
@@ -21,11 +30,12 @@ async function getStandDetails(standId) {
         throw createErrorResponse({
             message: 'Stand Not exists.',
             statusCode: 404,
-            description: 'Reqested Stand Details Not found in Database.',
+            description: 'Requested Stand Details Not found in Database.',
             suggestedAction: 'NA'
-        })
+        });
     }
 }
+
 
 module.exports = {
     getStandDetails

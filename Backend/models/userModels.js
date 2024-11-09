@@ -88,6 +88,17 @@ async function verifyCredentials(rollNumber, password) {
     }
 }
 
+/**
+ * Checks the current usage status of a user.
+ * This function queries the "usage-logs" collection in Firestore to determine if the user is currently riding a cycle.
+ * If the user is riding a cycle, it throws an error with relevant information; otherwise, it returns a success response indicating the user is idle.
+ * 
+ * @async
+ * @function checkCurrUsage
+ * @param {string} userId - The ID of the user whose cycle usage status is being checked.
+ * @returns {Promise<Object>} - Returns a success response if the user is idle, or throws an error if the user is currently using a cycle.
+ * @throws {Error} - Throws an error with a 409 status code if the user is currently using a cycle.
+ */
 async function checkCurrUsage(userId) {
     const currUsageRef = firebaseDb.collection('usage-logs').where('userId', '==', userId);
     const querySnapShot = await currUsageRef.get();
@@ -104,18 +115,21 @@ async function checkCurrUsage(userId) {
                 suggestedAction: 'Please leave the cycle in stand, and book again.'
             });
         } else {
-            return {
-                message: 'User is Ideal',
-                status: 'ideal'
-            };
+            return createSuccessResponse({
+                message: 'ok',
+                statusCode: 200,
+                description: 'User is ideal now.',
+            });
         }
     } else {
-        return {
-            message: 'User is Ideal',
-            status: 'ideal'
-        };
+        return createSuccessResponse({
+            message: 'ok',
+            statusCode: 200,
+            description: 'User is ideal now.',
+        });
     }
 }
+
 
 module.exports = {
     userRegistration,

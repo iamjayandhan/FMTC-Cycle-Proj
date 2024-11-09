@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const userRoutes = require('./routes/userRoutes');
+const standRoutes = require('./routes/standRoutes');
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleware');
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(cookieParser());
 
 //Routes
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/stands', standRoutes);
 
 //Error handling Middleware
 app.use(errorHandlingMiddleware);
