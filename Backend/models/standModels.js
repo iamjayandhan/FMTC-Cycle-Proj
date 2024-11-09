@@ -1,8 +1,9 @@
-const firebaseDb = require('../confs/dbConfig');
+const firebaseDb = require('../confs/dbConfig').db;
 
 const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');
 
 async function getStandDetails(standId) {
+    console.log('reaching')
     const standRef = firebaseDb.collection('stands').where('standId', '==', standId);
     const standSnapShot = await standRef.get();
 
