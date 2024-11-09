@@ -1,429 +1,234 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mapImage from '../assets/map image final.png';
-import SA from '../assets/cyc.png';
+import mapImage from '../assets/map.jpeg';
+import SA from '../assets/gps1.png';
 
 const MainPage = () => {
   const navigate = useNavigate();
 
-  //user
-  const [isPopupVisible, setIsPopupVisible] = useState(false); 
+  // User state
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupDescription, setPopupDescription] = useState('');
 
-  //map
+  // Map state
   const [mapWidth, setMapWidth] = useState(0);
   const mapContainerRef = useRef(null);
 
-  //stand
+  // Stand and cycle states
   const [selectedStand, setSelectedStand] = useState('');
-  
-  //cycle
-  const [cycles, setCycles] = useState([]);
-  const [availableCount, setAvailableCount] = useState(0);
+  const [standIdentity, setStandIdentity] = useState('');
+  const [cycles, setCycles] = useState({});
+  const [availableCount, setAvailableCount] = useState("");
   const [isCyclePopupVisible, setIsCyclePopupVisible] = useState(false);
 
   const stands = [
-    { id:1 , name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
-    { id:2 , name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
-    { id:3 , name: 'Stand C', top: '76.9%', left: '24%', image: SA },
-    { id:4 , name: 'Stand D', top: '15.6%', left: '45.9%', image: SA },
-    { id:5 , name: 'Stand E', top: '59.7%', left: '74.5%', image: SA },
-    { id:6 , name: 'Stand F', top: '76.9%', left: '54%', image: SA },
+    { id: '1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0', name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
+    { id: '8de75d9e-e105-44e4-a925-dbe7c1bbae6e', name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
+    { id: '8a7ca3a7-e985-4e9a-b3eb-99c324754e50', name: 'Stand C', top: '76.9%', left: '24%', image: SA },
+    { id: '3d58f6a4-3bc4-4323-ab3d-745907b89d27', name: 'Stand D', top: '15.6%', left: '45.9%', image: SA },
+    { id: 'a4c83600-2324-4da9-982b-089064d24026', name: 'Stand E', top: '59.7%', left: '74.5%', image: SA },
+    { id: 'b3a574ef-6006-40f0-9b7f-3fa6d22e05d6', name: 'Stand F', top: '76.9%', left: '54%', image: SA },
   ];
 
-  const handleLogout = () => {
-    navigate('/login');
-  };
+  const handleLogout = () => navigate('/login');
 
-  const handleStandClick = (standId) => {
-    setSelectedStand(standId.toString()); // Update selected stand by ID
+  const handleClose = () => {
+    setIsCyclePopupVisible(false);
+    setAvailableCount("");
+    setCycles([]);
   };
   
-  // Dropdown change handler
-  const handleDropdownChange = (event) => {
-    const selectedStandId = event.target.value;
-    setSelectedStand(selectedStandId); // Ensure this sets the ID too
-  };
+  const handleStandClick = (standId) => setSelectedStand(standId.toString());
   
-  
+  const handleDropdownChange = (event) => setSelectedStand(event.target.value);
 
-  // USEEFFECT => Update map width when the map container resizes
+  // Adjust map width based on container size
   useEffect(() => {
     const resizeObserver = new ResizeObserver(() => {
-      if (mapContainerRef.current) {
-        setMapWidth(mapContainerRef.current.offsetWidth);
-      }
+      if (mapContainerRef.current) setMapWidth(mapContainerRef.current.offsetWidth);
     });
-    
-    if (mapContainerRef.current) {
-      resizeObserver.observe(mapContainerRef.current);
-    }
-    
-    return () => {
-      resizeObserver.disconnect();
-    };
+    if (mapContainerRef.current) resizeObserver.observe(mapContainerRef.current);
+    return () => resizeObserver.disconnect();
   }, []);
 
-
-  // USE EFFECT => Fetch user booking status when enters main page.
+  // Fetch user booking status on component mount
   useEffect(() => {
-      fetch(`http://localhost:8080/api/v1/users/main`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials:'include',
-      })
-        .then(response => response.json())
-        .then(data => {
-          const { message, description } = data;
-          if (message !== 'ok') {
-            setPopupDescription(description);
-            setIsPopupVisible(true); 
-          }
-          console.log("User already have a ride to complete");
-        })
-        .catch(error => {
-          console.log("User side Error");
-          console.error("Error fetching user booking status:", error);
-
-          //testing!
-          // setPopupDescription('You already have a ride to complete. Kindly leave the previously booked cycle before going for new booking.');
-          // setIsPopupVisible(true); 
-        });
-  }, []);
-
-// USE EFFECT => Fetch cycle details from stand
-useEffect(() => {
-  if (selectedStand) {
-    const timer = setTimeout(() => {
-      fetch(`http://localhost:8080/api/v1/stand/${selectedStand}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          const { message, available, cycles } = data;
-          if (available === 0) {
-            setPopupDescription(message || 'No cycles available at this stand.');
-            setIsCyclePopupVisible(true);
-            console.log("No cycles available at this stand.");
-          } else if (available > 0) {
-            setCycles(cycles);
-            setAvailableCount(cycles.length); 
-            setIsCyclePopupVisible(true);
-            console.log("Total cycle available count: ", availableCount);
-            console.log("List of cycles by their names: ", cycles);
-          }
-        })
-        .catch(error => {
-          console.log("Cycle details fetch error.");
-          console.error("Error fetching cycle availability:", error);
-          console.log(selectedStand);
-        });
-    }, 2000);
-    
-    return () => clearTimeout(timer);
-  }
-}, [selectedStand]);
-
-// Ensure the popup visibility updates when cycles or availableCount change
-useEffect(() => {
-  if (cycles.length > 0 || availableCount > 0) {
-    setIsCyclePopupVisible(true);
-  }
-}, [cycles, availableCount]);
-
-
-  
-  
-  //FUNC => Fetch cycle's availability
-  const handleUnlockClick = (cycleName) => {
-    // Send the selected cycle to the backend
-    fetch(`http://localhost:8080/api/v1/cycle/${cycleName}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    fetch(`http://localhost:8080/api/v1/users/main`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
     })
       .then(response => response.json())
       .then(data => {
         const { message, description } = data;
-        if (message === 'success') {
-          // Display success message in popup
-          setPopupDescription(`Cycle ${cycleName} unlocked successfully!`);
-          console.log("Unlocked successfully!");
-          
-        } else {
-          // Display failure message in popup
-          setPopupDescription(`Failed to unlock cycle ${cycleName}. ${description}`);
-          console.log(`Failed to unlock cycle ${cycleName}. ${description}`);
+        if (message !== 'ok') {
+          setPopupDescription(description);
+          setIsPopupVisible(true);
         }
-        setIsCyclePopupVisible(true); // Show popup with the response message
+      })
+      .catch(error => console.error("Error fetching user booking status:", error));
+  }, []);
+
+  // Fetch cycle details for the selected stand
+  useEffect(() => {
+    if (selectedStand) {
+      const timer = setTimeout(() => {
+        fetch(`http://localhost:8080/api/v1/stands/${selectedStand}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
+        })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data.data);
+            const { availability, cycles, standIdentity } = data.data;
+            if (availability === 0) {
+              setPopupDescription('No cycles available at this stand.');
+              setIsCyclePopupVisible(true);
+            } else if (availability > 0) {
+              setCycles(cycles);
+              setStandIdentity(standIdentity)
+              setAvailableCount(Object.keys(cycles).length);
+              setIsCyclePopupVisible(true);
+            }
+          })
+          .catch(error => console.error("Error fetching cycle availability:", error));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedStand]);
+
+  const handleUnlockClick = (cycleName) => {
+    fetch(`http://localhost:8080/api/v1/cycle/${cycleName}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(data => {
+        const { message, description } = data;
+        setPopupDescription(
+          message === 'success'
+            ? `Cycle ${cycleName} unlocked successfully!`
+            : `Failed to unlock cycle ${cycleName}. ${description}`
+        );
+        setIsCyclePopupVisible(true);
       })
       .catch(error => {
-        console.error("Error unlocking cycle:", error);
         setPopupDescription('An error occurred while unlocking the cycle.');
         setIsCyclePopupVisible(true);
-        console.log(cycleName);
-        
       });
   };
 
   return (
     <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      minHeight: '100vh',
-      padding: '20px',
-      position: 'relative',
-      boxSizing: 'border-box',
-      backgroundColor:'#ffffff',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh',
+      padding: '20px', position: 'relative', backgroundColor: '#ffffff'
     }}>
-
+      
       {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          backgroundColor: '#ff4b5c',
-          color: '#ffffff',
-          border: 'none',
-          borderRadius: '4px',
-          padding: '8px 12px',
-          cursor: 'pointer',
-        }}
-      >
-        Logout
-      </button>
+      <button onClick={handleLogout} style={{
+        position: 'absolute', top: '20px', right: '20px', backgroundColor: '#ff4b5c',
+        color: '#fff', border: 'none', borderRadius: '4px', padding: '8px 12px', cursor: 'pointer'
+      }}>Logout</button>
 
-      <h1 style={{ marginTop: '40px', textAlign: 'center', color: '#333' }}>
-        Welcome user!
-      </h1>
-      <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>
-        Please choose the preferred stand and cycle below!
-      </p>
+      <h1 style={{ marginTop: '40px', textAlign: 'center', color: '#333' }}>Welcome user!</h1>
+      <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>Please choose the preferred stand and cycle below!</p>
 
       {/* Map container with responsive sizing */}
-      <div
-        ref={mapContainerRef}
-        style={{
-          position: 'relative',
-          width: '70vw',
-          maxWidth: '700px',
-          marginTop: '20px',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          border:'2px solid black',
-          overflow: 'hidden',
-          height: 'auto',
-          boxSizing: 'border-box',
-        }}
-      >
-        <img
-          src={mapImage}
-          alt="College Map"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-            borderRadius: '8px',
-          }}
-        />
-
-        {/* Stand Placeholders with relative positioning */}
-        {stands.map((stand, index) => {
-  const placeholderSize = mapWidth * 0.14; // Adjust placeholder size dynamically
-  const isSelected = selectedStand === stand.id.toString(); // Compare IDs as strings
-  
-  return (
-    <div
-      key={index}
-      onClick={() => handleStandClick(stand.id)}
-      style={{
-        position: 'absolute',
-        top: stand.top,
-        left: stand.left,
-        width: `${placeholderSize}px`,
-        height: `${placeholderSize}px`,
-        cursor: 'pointer',
-        transform: 'translate(-50%, -50%)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        border: isSelected ? '3px solid #00ff00' : 'none', // Green highlight if selected
-        borderRadius: '8px',
-        boxShadow: isSelected ? '0px 0px 10px 2px rgba(0, 255, 0, 0.5)' : 'none',
-      }}
-    >
-      {/* Stand image with onClick */}
-      
-      <img
-        src={stand.image}
-        alt={stand.name}
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent triggering outer div click event
-          handleStandClick(stand.id);
-        }}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain',
-          borderRadius: '8px',
-        }}
-      />
-      <span style={{
-        position: 'absolute',
-        top: '-35px', 
-        fontSize: 'clamp(12px, 2vw, 18px)',
-        color: '#333',
-        width: '160%',
-        backgroundColor: '#fff',
-        padding: '2px 6px',
-        borderRadius: '4px',
-        pointerEvents: 'none',
-        boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
+      <div ref={mapContainerRef} style={{
+        position: 'relative', width: '70vw', maxWidth: '700px', marginTop: '20px',
+        backgroundColor: 'white', borderRadius: '8px', border: '2px solid black',
+        overflow: 'hidden', height: 'auto'
       }}>
-        {stand.name}
-      </span>
-    </div>
-  );
-})}
+        <img src={mapImage} alt="College Map" style={{
+          width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px'
+        }} />
 
-      
-      
+        {/* Stand Placeholders */}
+        {stands.map((stand) => {
+          const placeholderSize = mapWidth * 0.14;
+          const isSelected = selectedStand === stand.id.toString();
+          return (
+            <div key={stand.id} onClick={() => handleStandClick(stand.id)} style={{
+              position: 'absolute', top: stand.top, left: stand.left,
+              width: `${placeholderSize}px`, height: `${placeholderSize}px`, cursor: 'pointer',
+              transform: 'translate(-50%, -50%)', display: 'flex', justifyContent: 'center', alignItems: 'center',
+              border: isSelected ? '3px solid green' : 'none', borderRadius: '8px',
+              // boxShadow: isSelected ? '0px 0px 5px 1px green' : 'none',
+            }}>
+              <img src={stand.image} alt={stand.name} onClick={(e) => {
+                e.stopPropagation(); handleStandClick(stand.id);
+              }} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
+              <span style={{
+                position: 'absolute', top: '-35px', fontSize: 'clamp(12px, 2vw, 18px)', color: '#333',
+                width: '160%', backgroundColor: '#fff', padding: '2px 6px', borderRadius: '4px',
+                boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)', pointerEvents: 'none',
+              }}>{stand.name}</span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Dropdown menu for selecting a stand */}
-      <select
-        value={selectedStand}
-        onChange={handleDropdownChange}
-        style={{
-          marginTop: '20px',
-          padding: '10px',
-          fontSize: '16px',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          backgroundColor:'#ff4b5c',
-          width: '30%',
-          maxWidth: '300px',
-          textAlign: 'center',
-        }}
-      >
+      {/* Dropdown menu */}
+      <select value={selectedStand} onChange={handleDropdownChange} style={{
+        marginTop: '20px', padding: '5px', fontSize: '12px', borderRadius: '4px',
+        border: '1px solid #ccc', width: '25%', maxWidth: '200px', textAlign: 'center'
+      }}>
         <option value="" disabled>Select</option>
         {stands.map((stand) => (
-          <option key={stand.id} value={stand.id}>
-            {stand.name}
-          </option>
+          <option key={stand.id} value={stand.id}>{stand.name}</option>
         ))}
       </select>
 
-      {/* Popup message if booking exists */}
-            {isPopupVisible && (
+      {/* User booking popup */}
+      {isPopupVisible && (
         <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: '#fff',
-          borderRadius: '8px',
-          boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
-          padding: '20px',
-          zIndex: 1000,
-          maxWidth:'200px',
+          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+          padding: '20px', zIndex: 1000, maxWidth: '200px'
         }}>
           <h2 style={{ marginBottom: '10px', color: '#333' }}>Alert</h2>
-          <p style={{ color: '#666',
-            maxWidth: '200px',
-            wordWrap: 'break-word',
-            overflowWrap: 'break-word', 
-            textAlign: 'center',
-            margin: '10px 0', 
-           }}>{popupDescription}</p>
-          <button
-            onClick={() => navigate('/')}
-            style={{
-              marginTop: '20px',
-              padding: '10px 20px',
-              backgroundColor: '#ff4b5c',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            Go Back
-          </button>
+          <p style={{
+            color: '#666', maxWidth: '200px', wordWrap: 'break-word',
+            overflowWrap: 'break-word', textAlign: 'center', margin: '10px 0'
+          }}>{popupDescription}</p>
+          <button onClick={() => navigate('/login')} style={{
+            backgroundColor: '#ff4b5c', color: '#fff', border: 'none', borderRadius: '4px',
+            padding: '8px 12px', cursor: 'pointer', marginTop: '10px', width: '100%'
+          }}>OK</button>
         </div>
       )}
 
-    <div>
-      {/* Popup for cycle availability */}
+      {/* Cycle availability popup */}
       {isCyclePopupVisible && (
         <div style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          backgroundColor: '#fff',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          padding: '20px',
-          width: '300px',
-          zIndex: '1000',
-          color:'black',
+          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
+          padding: '20px', zIndex: 1000, maxWidth: '400px'
         }}>
-
-
-          <h3 style={{ marginBottom:'20px'}}>Total Cycles Available: {availableCount}</h3>
-                      {cycles && cycles.length > 0 && (
-              <div style={{ marginTop: '20px' }}>
-                <h3>Available Cycles:</h3>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                  {cycles.map((cycle) => (
-                    <li key={cycle.id} style={{ marginBottom: '10px' }}>
-                      <span>{cycle.name}</span>
-                      <button
-                        onClick={() => handleUnlockClick(cycle.id)} 
-                        style={{
-                          marginLeft: '10px',
-                          padding: '5px 10px',
-                          backgroundColor: '#4CAF50',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Unlock
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-
-          <button onClick={() => setIsCyclePopupVisible(false)} style={{
-            backgroundColor: '#ff4b5c',
-            color: 'white',
-            padding: '8px 12px',
-            border: 'none',
-            borderRadius: '4px',
-            marginTop: '10px',
-            cursor: 'pointer',
+          <h2 style={{ marginBottom: '10px', color: '#333' }}>{`Stand: ${standIdentity}`}</h2>
+          <p style={{ color: '#666', textAlign: 'center', fontSize: 'clamp(10px, 2vw, 14px)' }}>
+            {availableCount ? `Available Cycles: ${availableCount}` : 'No cycles available at this stand.'}
+          </p>
+          <ul style={{
+            display: 'flex', flexWrap: 'wrap', justifyContent: 'center', padding: 0,
+            listStyle: 'none', gap: '10px', fontSize: 'clamp(12px, 2vw, 16px)'
+          }}>
+            {Object.entries(cycles).map(([cycleName, cycleId]) => (
+              <li key={cycleId} onClick={() => handleUnlockClick(cycleName)} style={{
+                backgroundColor: '#ff4b5c', color: '#fff', border: 'none', borderRadius: '4px',
+                padding: '8px 12px', cursor: 'pointer', minWidth: '40%', textAlign: 'center'
+              }}>{'C' + cycleName}</li>
+            ))}
+          </ul>
+          <button onClick={handleClose} style={{
+            backgroundColor: '#ccc', color: '#333', border: 'none', borderRadius: '4px',
+            padding: '8px 12px', cursor: 'pointer', marginTop: '10px', width: '100%'
           }}>
             Close
           </button>
         </div>
       )}
-    </div>
-
     </div>
   );
 };
