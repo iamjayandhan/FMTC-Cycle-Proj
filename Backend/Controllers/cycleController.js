@@ -4,8 +4,7 @@ const {createSuccessResponse, createErrorResponse} = require('../utils/responseU
 
 async function unlockCycle(req, res, next) {
     try {
-        const cycleId = req.params.id;
-        const standIdentity  = req.body;
+        const { standIdentity, cycleId }  = req.body;
 
         const cycleDetails = await cycleModels.getCycleDetails(cycleId);
 
