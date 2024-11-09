@@ -132,9 +132,11 @@ async function getInitialStand(req, res, next) {
     
         if (userCurrStatus.status === 'ideal') {
             const standDetails = await standModels.getStandDetails('1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0');
+            console.log(standDetails)
             res.status(standDetails.statusCode).json(standDetails);
         }
     } catch (error) {
+        console.log(error)
         next(error);
     }
 }
