@@ -3,7 +3,7 @@ const {v4: uuidv4} = require('uuid');
 
 const userModels = require('../models/userModels');
 const standModels = require('../models/standModels');
-const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');4
+const {createSuccessResponse, createErrorResponse} = require('../utils/responseUtils');
 const genToken = require('../utils/jwtUtils');
 
 /**
@@ -124,25 +124,37 @@ async function userLogin(req, res, next) {
     }
 }
 
-async function getInitialStand(req, res, next) {
+/**
+ * Checks if the user has an active cycle usage.
+ * If the user is not currently using a cycle, responds with a success message.
+ * 
+ * @async
+ * @function checkUserResource
+ * @param {object} req - The Express request object, containing user details in `req.user`.
+ * @param {object} res - The Express response object, used to send the JSON response.
+ * @param {function} next - The Express next middleware function, called to handle any errors.
+ * @returns {Promise<void>} - Sends a JSON response with the user's current usage status or passes errors to the error handler.
+ * @throws {AppError} - Forwards errors to the error-handling middleware if an exception occurs.
+ */
+async function checkUserResource(req, res, next) {
     try {
         const user = req.user;
 
         const userCurrStatus = await userModels.checkCurrUsage(user.userId);
-    
-        if (userCurrStatus.status === 'ideal') {
-            const standDetails = await standModels.getStandDetails('1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0');
-            console.log(standDetails)
-            res.status(standDetails.statusCode).json(standDetails);
+
+        if (userCurrStatus.message == 'ok') {
+            res.status(userCurrStatus.statusCode).json(userCurrStatus);
         }
     } catch (error) {
-        console.log(error)
+        // console.log(error);
         next(error);
     }
 }
 
+
+
 module.exports = {
     userRegisterController,
     userLogin,
-    getInitialStand,
+    checkUserResource,
 }
