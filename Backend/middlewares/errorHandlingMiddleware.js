@@ -2,10 +2,8 @@ const AppError = require('../utils/AppError');
 
 function errorHandlingMiddleware(err, req, res, next) {
     if (err instanceof AppError) {
-        console.log(err)
         res.status(err.statusCode).json(err.toResponseFormat());
     } else {
-        console.log("yeah here")
         res.status(500).json({
             statusCode: 500,
             message: 'Internal Server Error.',
