@@ -16,17 +16,18 @@ const MainPage = () => {
 
   // Stand and cycle states
   const [selectedStand, setSelectedStand] = useState('');
+  const [standIdentity, setStandIdentity] = useState('');
   const [cycles, setCycles] = useState({});
   const [availableCount, setAvailableCount] = useState("");
   const [isCyclePopupVisible, setIsCyclePopupVisible] = useState(false);
 
   const stands = [
-    { id: 1, name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
-    { id: 2, name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
-    { id: 3, name: 'Stand C', top: '76.9%', left: '24%', image: SA },
-    { id: 4, name: 'Stand D', top: '15.6%', left: '45.9%', image: SA },
-    { id: 5, name: 'Stand E', top: '59.7%', left: '74.5%', image: SA },
-    { id: 6, name: 'Stand F', top: '76.9%', left: '54%', image: SA },
+    { id: '1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0', name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
+    { id: '8de75d9e-e105-44e4-a925-dbe7c1bbae6e', name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
+    { id: '8a7ca3a7-e985-4e9a-b3eb-99c324754e50', name: 'Stand C', top: '76.9%', left: '24%', image: SA },
+    { id: '3d58f6a4-3bc4-4323-ab3d-745907b89d27', name: 'Stand D', top: '15.6%', left: '45.9%', image: SA },
+    { id: 'a4c83600-2324-4da9-982b-089064d24026', name: 'Stand E', top: '59.7%', left: '74.5%', image: SA },
+    { id: 'b3a574ef-6006-40f0-9b7f-3fa6d22e05d6', name: 'Stand F', top: '76.9%', left: '54%', image: SA },
   ];
 
   const handleLogout = () => navigate('/login');
@@ -72,19 +73,22 @@ const MainPage = () => {
   useEffect(() => {
     if (selectedStand) {
       const timer = setTimeout(() => {
-        fetch(`http://localhost:8080/api/v1/stand/${selectedStand}`, {
-          method: 'POST',
+        fetch(`http://localhost:8080/api/v1/stands/${selectedStand}`, {
+          method: 'GET',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
         })
           .then(response => response.json())
           .then(data => {
-            const { message, available, cycles } = data;
-            if (available === 0) {
-              setPopupDescription(message || 'No cycles available at this stand.');
+            console.log(data.data);
+            const { availability, cycles, standIdentity } = data.data;
+            if (availability === 0) {
+              setPopupDescription('No cycles available at this stand.');
               setIsCyclePopupVisible(true);
-            } else if (available > 0) {
+            } else if (availability > 0) {
               setCycles(cycles);
-              setAvailableCount(cycles.length);
+              setStandIdentity(standIdentity)
+              setAvailableCount(Object.keys(cycles).length);
               setIsCyclePopupVisible(true);
             }
           })
@@ -202,7 +206,7 @@ const MainPage = () => {
           backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
           padding: '20px', zIndex: 1000, maxWidth: '400px'
         }}>
-          <h2 style={{ marginBottom: '10px', color: '#333' }}>{selectedStand}</h2>
+          <h2 style={{ marginBottom: '10px', color: '#333' }}>{`Stand: ${standIdentity}`}</h2>
           <p style={{ color: '#666', textAlign: 'center', fontSize: 'clamp(10px, 2vw, 14px)' }}>
             {availableCount ? `Available Cycles: ${availableCount}` : 'No cycles available at this stand.'}
           </p>
@@ -210,7 +214,7 @@ const MainPage = () => {
             display: 'flex', flexWrap: 'wrap', justifyContent: 'center', padding: 0,
             listStyle: 'none', gap: '10px', fontSize: 'clamp(12px, 2vw, 16px)'
           }}>
-            {Object.entries(cycles).map(([cycleId, cycleName]) => (
+            {Object.entries(cycles).map(([cycleName, cycleId]) => (
               <li key={cycleId} onClick={() => handleUnlockClick(cycleName)} style={{
                 backgroundColor: '#ff4b5c', color: '#fff', border: 'none', borderRadius: '4px',
                 padding: '8px 12px', cursor: 'pointer', minWidth: '40%', textAlign: 'center'
