@@ -15,6 +15,9 @@ const MainPage = () => {
     { name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
     { name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
     { name: 'Stand C', top: '76.9%', left: '24%', image: SA },
+    { name: 'Stand D', top: '15.6%', left: '45.9%', image: SA },
+    { name: 'Stand E', top: '59.7%', left: '74.5%', image: SA },
+    { name: 'Stand F', top: '76.9%', left: '54%', image: SA },
   ];
 
   const handleLogout = () => {
