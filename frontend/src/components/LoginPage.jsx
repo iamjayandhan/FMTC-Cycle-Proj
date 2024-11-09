@@ -40,7 +40,8 @@ const LoginPage = () => {
           navigate('/main');
         }, 2000);
       } else {
-        const errorData = await response.json();
+        const errorData = (await response.json()).error;
+        console.log(errorData);
         toast.error(`Login failed: ${errorData.message}`, {
           position: 'top-center',
           autoClose: 3000,

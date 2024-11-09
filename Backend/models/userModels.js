@@ -60,7 +60,7 @@ async function verifyCredentials(rollNumber, password) {
     const querySnapShot = await userDetailsRef.get();
 
     if (querySnapShot.empty) {
-        return createErrorResponse({
+        throw createErrorResponse({
             message: 'User not exists with this Roll Number.',
             statusCode: 404,
             description: 'No user found with this roll number. Try another.',
@@ -74,7 +74,7 @@ async function verifyCredentials(rollNumber, password) {
     const isPasswordValid = await bcrypt.compare(password, userData.password);
 
     if (!isPasswordValid) {
-        return createErrorResponse({
+        throw createErrorResponse({
             message: 'Invalid Credentials.',
             statusCode: 401,
             description: 'The password provided is incorrect.',
