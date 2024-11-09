@@ -63,7 +63,7 @@ const MainPage = () => {
 
   // USE EFFECT => Fetch user booking status when enters main page.
   useEffect(() => {
-      fetch('http://localhost:8080/api/v1/users/main', {
+      fetch(`http://localhost:8080/api/v1/users/main`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +94,7 @@ const MainPage = () => {
 // useEffect(() => {
 //   if (selectedStand) {
 //     const timer = setTimeout(() => {
-//       fetch(http://localhost:8080/api/v1/stand/${selectedStand}, {
+//       fetch(`http://localhost:8080/api/v1/stand/${selectedStand}`, {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -386,7 +386,7 @@ const MainPage = () => {
                   <li key={value} style={{ marginBottom: '10px' }}>
                       <span>{key}</span>
                       <button
-                          onClick={() => handleUnlockClick(value)}  // Using value directly
+                          onClick={() => handleUnlockClick(value)}  // Using `value` directly
                           style={{
                               marginLeft: '10px',
                               padding: '5px 10px',
