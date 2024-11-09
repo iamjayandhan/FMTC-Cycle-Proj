@@ -192,7 +192,7 @@ const MainPage = () => {
             color: '#666', maxWidth: '200px', wordWrap: 'break-word',
             overflowWrap: 'break-word', textAlign: 'center', margin: '10px 0'
           }}>{popupDescription}</p>
-          <button onClick={() => navigate('/booking')} style={{
+          <button onClick={() => navigate('/login')} style={{
             backgroundColor: '#ff4b5c', color: '#fff', border: 'none', borderRadius: '4px',
             padding: '8px 12px', cursor: 'pointer', marginTop: '10px', width: '100%'
           }}>OK</button>

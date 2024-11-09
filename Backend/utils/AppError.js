@@ -40,7 +40,7 @@ class AppError extends Error {
             statusCode: this.statusCode,
             message: this.message,
             description: this.description,
-            suggestedAction: this.suggestedAction,
+            suggestedAction: this.suggestedAction
         };
     }
 }
