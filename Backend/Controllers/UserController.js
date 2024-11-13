@@ -106,7 +106,7 @@ async function userLogin(req, res, next) {
     
         const response = await userModels.verifyCredentials(rollNumber, password);
 
-        const token = await genToken(response.data);
+        const token = genToken(response.data);
 
         res.cookie('JTOK', token, { 
             maxAge: 1000 * 60 * 60 * 2, 
@@ -138,6 +138,7 @@ async function userLogin(req, res, next) {
  */
 async function checkUserResource(req, res, next) {
     try {
+        console.log('Checking availability...')
         const user = req.user;
 
         const userCurrStatus = await userModels.checkCurrUsage(user.userId);
@@ -146,7 +147,7 @@ async function checkUserResource(req, res, next) {
             res.status(userCurrStatus.statusCode).json(userCurrStatus);
         }
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         next(error);
     }
 }

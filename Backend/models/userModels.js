@@ -1,3 +1,5 @@
+const admin = require('firebase-admin');
+
 const firebaseDb = require('../confs/dbConfig').db;
 const bcrypt = require('bcrypt');
 
@@ -100,18 +102,21 @@ async function verifyCredentials(rollNumber, password) {
  * @throws {Error} - Throws an error with a 409 status code if the user is currently using a cycle.
  */
 async function checkCurrUsage(userId) {
-    const currUsageRef = firebaseDb.collection('usage-logs').where('userId', '==', userId);
+    console.log("Checking current Usage")
+    const currUsageRef = firebaseDb.collection('user-logs').where('userId', '==', userId);
     const querySnapShot = await currUsageRef.get();
 
     if (!querySnapShot.empty) {
         const currUsageDoc = querySnapShot.docs[0];
         const currUsageData = currUsageDoc.data();
 
-        if (currUsageData.status) {
+        console.log(currUsageData)
+
+        if (currUsageData.status === "On-Road..") {
             throw createErrorResponse({
                 message: 'Resource not available.',
                 statusCode: 409,
-                description: `User Currently riding the cycle: ${currUsageData.cycle.cycleNo}`,
+                description: `User Currently riding the cycle`,
                 suggestedAction: 'Please leave the cycle in stand, and book again.'
             });
         } else {
@@ -130,9 +135,35 @@ async function checkCurrUsage(userId) {
     }
 }
 
+async function addUserHistory(userId, trackId) {
+    const usersRef = firebaseDb.collection('users').where('userId', '==', userId);
+    const usersSnapShot = await usersRef.get();
+
+    if (!usersSnapShot.empty) {
+        const userDocs = usersSnapShot.docs[0];
+        const userDocsRef = userDocs.ref;
+
+        await userDocsRef.update({
+            prevUsages: admin.firestore.FieldValue.arrayUnion(trackId),
+        });
+
+        return createSuccessResponse({
+            message: 'user details updated.',
+            statusCode: 200
+        });
+    } else {
+        throw createErrorResponse({
+            message: 'Resource not found.',
+            statusCode: 404,
+            description: 'User not found in the given userId.',
+            suggestedAction: 'Provide correct userId.'
+        });
+    }
+}
 
 module.exports = {
     userRegistration,
     verifyCredentials,
     checkCurrUsage,
+    addUserHistory,
 }
