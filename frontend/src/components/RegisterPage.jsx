@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import bikeLogo from '../assets/bike.png';
+
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -56,94 +58,44 @@ const RegisterPage = () => {
 
   const handleLogin = () => navigate('/login');
 
-  const styles = {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      backgroundColor: '#f4f6f9',
-      padding: '20px',
-      boxSizing: 'border-box'
-    },
-    toggleContainer: {
-      display: 'flex',
-      justifyContent: 'center',
-      marginBottom: '20px'
-    },
-    formContainer: {
-      width: '100%',
-      maxWidth: '400px',
-      padding: '20px',
-      boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-      borderRadius: '8px',
-      backgroundColor: '#ffffff',
-      boxSizing: 'border-box'
-    },
-    button: (isActive) => ({
-      padding: '10px 20px',
-      backgroundColor: isActive ? '#007bff' : '#f0f0f0',
-      color: isActive ? '#ffffff' : '#333333',
-      border: 'none',
-      borderRadius: isActive ? '4px 0 0 4px' : '0 4px 4px 0',
-      cursor: 'pointer'
-    }),
-    input: {
-      width: '100%',
-      padding: '10px',
-      boxSizing: 'border-box',
-      border: '1px solid #d1d5db',
-      borderRadius: '4px',
-      backgroundColor: '#f1f3f5',
-      color: 'black'
-    },
-    submitButton: {
-      width: '100%',
-      padding: '10px',
-      backgroundColor: '#007bff',
-      color: '#ffffff',
-      border: 'none',
-      borderRadius: '4px',
-      cursor: 'pointer'
-    }
-  };
-
   return (
-    <div style={styles.container}>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
 
-      <h1 style={{ fontSize: '40px', textAlign: 'center', marginBottom: '20px', color: '#333333' }}>
-        Cycle Project Registration
-      </h1>
+      <div className="text-center mb-8 md:mb-10 flex items-center justify-center">
+  <img src={bikeLogo} alt="Bike Logo" className="w-32 h-32 mr-4" />
+  <div>
+    <h1 className="text-4xl md:text-5xl font-extrabold text-blue-400 mb-2 drop-shadow-lg">Pedals</h1>
+    <p className="text-lg md:text-xl font-medium text-gray-300 tracking-wide italic">"Anytime Mobility"</p>
+  </div>
+</div>
 
-      <div style={styles.toggleContainer}>
-        <button onClick={() => setIsStudent(true)} style={styles.button(isStudent)}>Student</button>
-        <button onClick={() => setIsStudent(false)} style={styles.button(!isStudent)}>Guest</button>
-      </div>
 
-      <div style={styles.formContainer}>
-        <h2 style={{ marginBottom: '15px', color: '#333333' }}>
+      <div className="w-full max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl p-6 sm:p-8 bg-gray-800 shadow-xl rounded-lg">
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-100 mb-6">
           {isStudent ? 'Register as Student' : 'Register as Guest'}
         </h2>
-        <form onSubmit={handleRegister}>
+
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setIsStudent(true)}
+            className={`w-32 py-2 rounded-l-md ${isStudent ? 'bg-blue-500 text-gray-100' : 'bg-gray-600 text-gray-400'}`}
+          >
+            Student
+          </button>
+          <button
+            onClick={() => setIsStudent(false)}
+            className={`w-32 py-2 rounded-r-md ${!isStudent ? 'bg-blue-500 text-gray-100' : 'bg-gray-600 text-gray-400'}`}
+          >
+            Guest
+          </button>
+        </div>
+
+        <form onSubmit={handleRegister} className="space-y-6">
           {isStudent && (
             <>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Roll No:</label>
-                <input
-                  name="rollNumber"
-                  minLength={4}
-                  type="text"
-                  placeholder="Enter your roll number"
-                  value={formData.rollNumber}
-                  onChange={handleInputChange}
-                  required
-                  style={styles.input}
-                />
-              </div>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Username:</label>
+              <div className="w-full text-left">
+                <label htmlFor="userName" className="block text-lg md:text-m font-medium text-gray-300 mb-1">Username:</label>
                 <input
                   name="userName"
                   minLength={4}
@@ -152,14 +104,28 @@ const RegisterPage = () => {
                   value={formData.userName}
                   onChange={handleInputChange}
                   required
-                  style={styles.input}
+                  className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
                 />
               </div>
+              <div className="w-full text-left">
+                <label htmlFor="rollNumber" className="block text-lg md:text-m font-medium text-gray-300 mb-1">Roll Number:</label>
+                <input
+                  name="rollNumber"
+                  minLength={4}
+                  type="text"
+                  placeholder="Enter your roll number"
+                  value={formData.rollNumber}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
+                />
+              </div>
+              
             </>
           )}
-          {/* Mobile Field for Both Student and Guest */}
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Mobile:</label>
+
+          <div className="w-full text-left">
+            <label htmlFor="mobile" className="block text-m md:text-lg font-medium text-gray-300 mb-1">Mobile:</label>
             <input
               name="mobile"
               type="text"
@@ -169,26 +135,28 @@ const RegisterPage = () => {
               required
               pattern="\d{10}"
               maxLength="10"
-              style={styles.input}
+              className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
             />
           </div>
+
           {!isStudent && (
-            <div style={{ marginBottom: '15px' }}>
-              <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Passnumber:</label>
+            <div className="w-full text-left">
+              <label htmlFor="passnumber" className="block text-m md:text-lg font-medium text-gray-300 mb-1">Passnumber:</label>
               <input
                 name="passnumber"
                 type="text"
-                placeholder="Enter your passnumber (up to 30 characters)"
+                placeholder="Enter your passnumber"
                 value={formData.passnumber}
                 onChange={handleInputChange}
                 maxLength="30"
                 required
-                style={styles.input}
+                className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
               />
             </div>
           )}
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'flex', marginBottom: '5px', color: '#333333' }}>Password:</label>
+
+          <div className="w-full text-left">
+            <label htmlFor="password" className="block text-m md:text-lg font-medium text-gray-300 mb-1">Password:</label>
             <input
               name="password"
               type="password"
@@ -197,28 +165,26 @@ const RegisterPage = () => {
               onChange={handleInputChange}
               minLength={4}
               required
-              style={styles.input}
+              className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
             />
           </div>
-          <button type="submit" style={styles.submitButton}>Register</button>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-blue-500 text-gray-100 font-semibold rounded-md hover:bg-blue-600 transition duration-200"
+          >
+            Register
+          </button>
         </form>
 
-        <p style={{ marginTop: '20px', color: '#333333', textAlign: 'center' }}>
+        <p className="mt-6 text-center text-gray-400">
           Already have an account?{' '}
-          <button
+          <a
             onClick={handleLogin}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#007bff',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-              padding: '0',
-              fontSize: 'inherit'
-            }}
+            className="text-blue-400 hover:underline cursor-pointer"
           >
             Login
-          </button>
+          </a>
         </p>
       </div>
     </div>

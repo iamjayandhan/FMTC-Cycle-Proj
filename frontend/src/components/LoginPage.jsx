@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import bikeLogo from '../assets/bike.png';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-console.log(apiUrl)
+console.log(apiUrl);
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -26,8 +27,7 @@ const LoginPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
         credentials: 'include',
-      }
-    );
+      });
 
       if (response.ok) {
         const responseData = await response.json();
@@ -62,40 +62,23 @@ const LoginPage = () => {
 
   return (
     <>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          backgroundColor: '#f4f6f9',
-          padding: '20px',
-          boxSizing: 'border-box',
-          position: 'relative',
-        }}
-      >
-        <h1 style={{ textAlign: 'center', marginBottom: '20px', color: '#333333' }}>
-          Cycle Project Login
-        </h1>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+      <div className="text-center mb-8 md:mb-10 flex items-center justify-center">
+  <img src={bikeLogo} alt="Bike Logo" className="w-32 h-32 mr-4" />
+  <div>
+    <h1 className="text-4xl md:text-5xl font-extrabold text-blue-400 mb-2 drop-shadow-lg">Pedals</h1>
+    <p className="text-lg md:text-xl font-medium text-gray-300 tracking-wide italic">"Anytime Mobility"</p>
+  </div>
+</div>
 
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '400px',
-            padding: '20px',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-            borderRadius: '8px',
-            backgroundColor: '#ffffff',
-            boxSizing: 'border-box',
-          }}
-        >
-          <h2 style={{ fontSize: 30, marginBottom: '15px', color: '#333333' }}>Welcome Back!</h2>
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: '15px' }}>
+
+        <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-6 sm:p-8 bg-gray-800 shadow-xl rounded-lg">
+          <h2 className="text-2xl md:text-3xl font-semibold text-gray-100 mb-6">User Login</h2>
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="w-full text-left">
               <label
-                htmlFor="username"
-                style={{ display: 'block', marginBottom: '5px', color: '#333333' }}
+                htmlFor="rollNumber"
+                className="block text-sm md:text-lg font-medium text-gray-300 mb-1"
               >
                 Roll Number:
               </label>
@@ -107,24 +90,13 @@ const LoginPage = () => {
                 value={formData.rollNumber}
                 onChange={handleInputChange}
                 required
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  backgroundColor: '#f1f3f5',
-                  color: '#333333',
-                  outline: 'none',
-                  transition: 'border-color 0.3s',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#007bff')}
-                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
+                className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
               />
             </div>
-            <div style={{ marginBottom: '20px' }}>
+            <div className="w-full text-left">
               <label
                 htmlFor="password"
-                style={{ display: 'block', marginBottom: '5px', color: '#333333' }}
+                className="block text-sm md:text-lg font-medium text-gray-300 mb-1"
               >
                 Password:
               </label>
@@ -136,59 +108,27 @@ const LoginPage = () => {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
-                style={{
-                  width: '100%',
-                  padding: '10px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '4px',
-                  backgroundColor: '#f1f3f5',
-                  color: '#333333',
-                  outline: 'none',
-                  transition: 'border-color 0.3s',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = '#007bff')}
-                onBlur={(e) => (e.target.style.borderColor = '#d1d5db')}
+                className="w-full px-4 py-2 border border-gray-600 rounded-md bg-gray-700 text-gray-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-200"
               />
             </div>
             <button
               type="submit"
-              style={{
-                width: '100%',
-                padding: '10px',
-                backgroundColor: '#007bff',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                transition: 'background-color 0.3s',
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = '#0056b3')}
-              onMouseOut={(e) => (e.target.style.backgroundColor = '#007bff')}
+              className="w-full py-2 bg-blue-500 text-gray-100 font-semibold rounded-md hover:bg-blue-600 transition duration-200"
             >
               Login
             </button>
           </form>
 
-          <p style={{ marginTop: '20px', color: '#333333', textAlign: 'center' }}>
+          <p className="mt-6 text-center text-gray-400">
             Don't have an account?{' '}
-            <button
+            <a
               onClick={handleRegister}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#007bff',
-                cursor: 'pointer',
-                textDecoration: 'underline',
-                padding: '0',
-                fontSize: 'inherit',
-              }}
+              className="text-blue-400 hover:underline cursor-pointer"
             >
               Register
-            </button>
+            </a>
           </p>
         </div>
-
         <ToastContainer />
       </div>
     </>

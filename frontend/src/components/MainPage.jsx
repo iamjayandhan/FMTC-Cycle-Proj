@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mapImage from '../assets/map.jpeg';
+import mapImage from '../assets/finalMap.jpeg';
 import SA from '../assets/gps1.png';
 
 const MainPage = () => {
@@ -22,12 +22,12 @@ const MainPage = () => {
   const [isCyclePopupVisible, setIsCyclePopupVisible] = useState(false);
 
   const stands = [
-    { id: '1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0', name: 'Stand A', top: '25.6%', left: '15.9%', image: SA },
-    { id: '8de75d9e-e105-44e4-a925-dbe7c1bbae6e', name: 'Stand B', top: '39.7%', left: '54.5%', image: SA },
-    { id: '8a7ca3a7-e985-4e9a-b3eb-99c324754e50', name: 'Stand C', top: '76.9%', left: '24%', image: SA },
-    { id: '3d58f6a4-3bc4-4323-ab3d-745907b89d27', name: 'Stand D', top: '15.6%', left: '45.9%', image: SA },
-    { id: 'a4c83600-2324-4da9-982b-089064d24026', name: 'Stand E', top: '59.7%', left: '74.5%', image: SA },
-    { id: 'b3a574ef-6006-40f0-9b7f-3fa6d22e05d6', name: 'Stand F', top: '76.9%', left: '54%', image: SA },
+    { id: '1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0', name: 'Stand A', top: '25.6%', left: '30.9%', image: SA }, //KGCAS
+    { id: '8de75d9e-e105-44e4-a925-dbe7c1bbae6e', name: 'Stand B', top: '45.7%', left: '4.5%', image: SA }, //KGISL PARKING
+    { id: '8a7ca3a7-e985-4e9a-b3eb-99c324754e50', name: 'Stand C', top: '56.9%', left: '36%', image: SA }, //Girls Hostel
+    { id: '3d58f6a4-3bc4-4323-ab3d-745907b89d27', name: 'Stand D', top: '12.6%', left: '42.9%', image: SA }, //Boys Hostel
+    { id: 'a4c83600-2324-4da9-982b-089064d24026', name: 'Stand E', top: '69.7%', left: '4.5%', image: SA }, //Front Gate
+    { id: 'b3a574ef-6006-40f0-9b7f-3fa6d22e05d6', name: 'Stand F', top: '61.9%', left: '64%', image: SA }, //Admin
   ];
 
   const handleLogout = () => navigate('/login');
@@ -165,8 +165,8 @@ const MainPage = () => {
         color: '#fff', border: 'none', borderRadius: '4px', padding: '8px 12px', cursor: 'pointer'
       }}>Logout</button>
 
-      <h1 style={{ marginTop: '40px', textAlign: 'center', color: '#333' }}>Welcome user!</h1>
-      <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>Please choose the preferred stand and cycle below!</p>
+      <h1 style={{ marginTop: '40px', textAlign: 'center', color: '#333' }}>Pedals</h1>
+      <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>Anytime Mobility</p>
 
       {/* Map container with responsive sizing */}
       <div ref={mapContainerRef} style={{
@@ -174,9 +174,12 @@ const MainPage = () => {
         backgroundColor: 'white', borderRadius: '8px', border: '2px solid black',
         overflow: 'hidden', height: 'auto'
       }}>
-        <img src={mapImage} alt="College Map" style={{
-          width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px'
-        }} />
+      <img src={mapImage} alt="College Map" style={{
+        width: '100%',
+        height: '50vh', // This will make the image height full screen
+        objectFit: 'cover',
+        borderRadius: '8px'
+      }} />
 
         {/* Stand Placeholders */}
         {stands.map((stand) => {
