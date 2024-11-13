@@ -60,6 +60,7 @@ const MainPage = () => {
     })
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         const { message, description } = data;
         if (message !== 'ok') {
           setPopupDescription(description);
@@ -72,7 +73,10 @@ const MainPage = () => {
   // Fetch cycle details for the selected stand
   useEffect(() => {
     if (selectedStand) {
+      console.log(selectedStand);
+      
       const timer = setTimeout(() => {
+        console.log(selectedStand)
         fetch(`http://localhost:8080/api/v1/stands/${selectedStand}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -83,6 +87,7 @@ const MainPage = () => {
             console.log(data.data);
             const { availability, cycles, standIdentity } = data.data;
             if (availability === 0) {
+              setStandIdentity(standIdentity)
               setPopupDescription('No cycles available at this stand.');
               setIsCyclePopupVisible(true);
             } else if (availability > 0) {
@@ -98,26 +103,55 @@ const MainPage = () => {
     }
   }, [selectedStand]);
 
-  const handleUnlockClick = (cycleName) => {
-    fetch(`http://localhost:8080/api/v1/cycle/${cycleName}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(response => response.json())
-      .then(data => {
-        const { message, description } = data;
-        setPopupDescription(
-          message === 'success'
-            ? `Cycle ${cycleName} unlocked successfully!`
-            : `Failed to unlock cycle ${cycleName}. ${description}`
-        );
-        setIsCyclePopupVisible(true);
+  const handleUnlockClick = (selectedStandId, cycleNumber) => {
+    // Step 1: Find the stand object based on the selected stand ID
+    const selectedStand = stands.find(stand => stand.id === selectedStandId);
+    
+    // Extract the last character of the stand name (e.g., "A" from "Stand A")
+    const standIdentity = selectedStand ? selectedStand.name.slice(-1) : null;
+  
+    // Step 2: Retrieve the cycle ID using the cycle number
+    const cycleId = cycles[cycleNumber];
+  
+    // Step 3: Send the request if both standIdentity and cycleId are found
+    if (standIdentity && cycleId) {
+
+      console.log('standID:',standIdentity);
+      console.log('cycleID:',cycleId);
+      
+      
+      fetch(`http://localhost:8080/api/v1/cycles/unlock`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          standIdentity: standIdentity,
+          cycleId: cycleId
+        }),
+        credentials: 'include',
       })
-      .catch(error => {
-        setPopupDescription('An error occurred while unlocking the cycle.');
-        setIsCyclePopupVisible(true);
-      });
+        .then(response => response.json())
+        .then(data => {
+          const { message, description } = data;
+          setPopupDescription(
+            message === 'ok'
+              ? `Cycle ${cycleId} at Stand ${standIdentity} unlocked successfully!`
+              : `Failed to unlock cycle ${cycleId} at Stand ${standIdentity}. ${description}`
+          );
+          setIsCyclePopupVisible(true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)
+        })
+        .catch(error => {
+          setPopupDescription('An error occurred while unlocking the cycle.');
+          setIsCyclePopupVisible(true);
+        });
+    } else {
+      setPopupDescription('Invalid stand or cycle selection.');
+      setIsCyclePopupVisible(true);
+    }
   };
+  
 
   return (
     <div style={{
@@ -215,15 +249,28 @@ const MainPage = () => {
             listStyle: 'none', gap: '10px', fontSize: 'clamp(12px, 2vw, 16px)'
           }}>
             {Object.entries(cycles).map(([cycleName, cycleId]) => (
-              <li key={cycleId} onClick={() => handleUnlockClick(cycleName)} style={{
-                backgroundColor: '#ff4b5c', color: '#fff', border: 'none', borderRadius: '4px',
-                padding: '8px 12px', cursor: 'pointer', minWidth: '40%', textAlign: 'center'
-              }}>{'C' + cycleName}</li>
+              <li key={cycleId} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
+                backgroundColor: '#ff4b5c', color: '#fff', borderRadius: '4px',
+                padding: '3px 15px', minWidth: '40%', textAlign: 'center', marginBottom: '8px'
+              }}>
+                <span>{'C' + cycleName}</span>
+                <button 
+                  onClick={() => handleUnlockClick(selectedStand, cycleName)}
+                  style={{
+                    backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '4px',
+                    padding: '4px 8px', cursor: 'pointer', marginLeft: '10px'
+                  }}
+                >
+                  Unlock
+                </button>
+              </li>
             ))}
+
           </ul>
           <button onClick={handleClose} style={{
             backgroundColor: '#ccc', color: '#333', border: 'none', borderRadius: '4px',
-            padding: '8px 12px', cursor: 'pointer', marginTop: '10px', width: '100%'
+            padding: '4px 12px', cursor: 'pointer', marginTop: '10px', width: '50%'
           }}>
             Close
           </button>
