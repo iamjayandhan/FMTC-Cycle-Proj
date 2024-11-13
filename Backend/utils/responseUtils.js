@@ -30,6 +30,7 @@ function createSuccessResponse({ message, statusCode = 200, description = '', da
  * @returns {AppError} Returns an instance of AppError.
  */
 function createErrorResponse({ message, statusCode, description = '', suggestedAction = '' }) {
+    console.log(message)
     return new AppError({
         message,
         statusCode,

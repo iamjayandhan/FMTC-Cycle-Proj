@@ -8,11 +8,13 @@ const standRoutes = require('./routes/standRoutes');
 const cycleRoutes = require('./routes/cycleRoutes');
 const errorHandlingMiddleware = require('./middlewares/errorHandlingMiddleware');
 
+require('./utils/dbOnWatch')()
+
 const app = express();
 
 app.use(cors({
     origin: 'http://localhost:5173', // Allow only this origin
-    methods: 'GET,POST, PUT', // Specify allowed methods
+    methods: 'GET,POST,PUT', // Specify allowed methods
     credentials: true // Enable cookies and other credentials
 }));
 app.use(express.json());
@@ -22,7 +24,7 @@ app.use(cookieParser());
 //Routes
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/stands', standRoutes);
-app.use('api/v1/cycles', cycleRoutes);
+app.use('/api/v1/cycles', cycleRoutes);
 
 //Error handling Middleware
 app.use(errorHandlingMiddleware);
