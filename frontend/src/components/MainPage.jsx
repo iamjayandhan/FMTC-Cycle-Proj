@@ -60,6 +60,7 @@ const MainPage = () => {
     })
       .then(response => response.json())
       .then(data => {
+        console.log(data)
         const { message, description } = data;
         if (message !== 'ok') {
           setPopupDescription(description);
@@ -74,7 +75,10 @@ const MainPage = () => {
     if (selectedStand) {
       console.log(selectedStand);
       
+      console.log(selectedStand);
+      
       const timer = setTimeout(() => {
+        console.log(selectedStand)
         fetch(`http://localhost:8080/api/v1/stands/${selectedStand}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -85,6 +89,7 @@ const MainPage = () => {
             console.log(data.data);
             const { availability, cycles, standIdentity } = data.data;
             if (availability === 0) {
+              setStandIdentity(standIdentity)
               setPopupDescription('No cycles available at this stand.');
               setIsCyclePopupVisible(true);
             } else if (availability > 0) {
@@ -117,23 +122,27 @@ const MainPage = () => {
       console.log('cycleID:',cycleId);
       
       
-      fetch(`http://localhost:8080/api/v1/cycle/unlock`, {
+      fetch(`http://localhost:8080/api/v1/cycles/unlock`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           standIdentity: standIdentity,
           cycleId: cycleId
         }),
+        credentials: 'include',
       })
         .then(response => response.json())
         .then(data => {
           const { message, description } = data;
           setPopupDescription(
-            message === 'success'
+            message === 'ok'
               ? `Cycle ${cycleId} at Stand ${standIdentity} unlocked successfully!`
               : `Failed to unlock cycle ${cycleId} at Stand ${standIdentity}. ${description}`
           );
           setIsCyclePopupVisible(true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000)
         })
         .catch(error => {
           setPopupDescription('An error occurred while unlocking the cycle.');
