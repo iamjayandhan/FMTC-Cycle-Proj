@@ -75,8 +75,6 @@ const MainPage = () => {
     if (selectedStand) {
       console.log(selectedStand);
       
-      console.log(selectedStand);
-      
       const timer = setTimeout(() => {
         console.log(selectedStand)
         fetch(`http://localhost:8080/api/v1/stands/${selectedStand}`, {
