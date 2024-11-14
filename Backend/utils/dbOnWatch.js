@@ -9,8 +9,8 @@ function dbOnWatch() {
             console.log(`After 5 seconds...`);
             const data = snapshot.val();
             console.log(`data_changed: ${JSON.stringify(data, null, 2)}`); // Pretty-print JSON
-            if (data.STATUS === "LOCKED") {
-                await cycleController.lockCycle(data.CYCLE, data.STAND_ID, data.SLOT_ID);
+            if (data.CYCLE_STATUS === "LOCKED") {
+                await cycleController.lockCycle(data.CYCLE_ID, data.STAND_ID, data.SLOT_ID);
             }
         }, 5000);
     });

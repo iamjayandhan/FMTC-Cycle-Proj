@@ -110,8 +110,6 @@ async function userLogin(req, res, next) {
 
         res.cookie('JTOK', token, {
             httpOnly: true,   // Ensures it's not accessible via JavaScript
-            secure: true,     // Ensures it's sent over HTTPS
-            sameSite: 'Lax',  // Allows cross-origin requests with cookies
             maxAge: 3600000   // Optional: Expiry time of the cookie (e.g., 1 hour)
         });
         

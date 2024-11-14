@@ -51,11 +51,11 @@ async function unlockCycle(cycleNo, slot, standNo) {
 
     try {
         await cyclesRef.update({
-            CYCLE: cycleNo,
-            CYCLE_STATUS: `${standNo}_${slot}_CYCLE_${cycleNo}`,
+            CYCLE_ID: cycleNo,
+            STAND_STATUS: `${standNo}_${slot}_CYCLE_${cycleNo}`,
             SLOT_ID: +slot,
             STAND_ID: standNo,
-            STATUS: 'UNLOCK'
+            CYCLE_STATUS: 'UNLOCKED'
         });
 
         
