@@ -13,7 +13,7 @@ require('./utils/dbOnWatch')()
 const app = express();
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow only this origin
+    origin: 'https://fmtc.vercel.app', // Allow only this origin
     methods: 'GET,POST,PUT', // Specify allowed methods
     credentials: true // Enable cookies and other credentials
 }));
