@@ -1,7 +1,14 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-})
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://fmtc-cycle-proj-one.vercel.app/api/v1',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),  // Adjust the path to remove /api prefix
+      }
+    }
+  }
+});
