@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
@@ -22,7 +23,6 @@ const allowedOrigins = [
 // CORS Configuration
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow requests from these origins
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true); // Allow the request
         } else {
@@ -34,17 +34,20 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
 };
 
+// Apply Helmet middleware for security headers
+app.use(helmet());
+
 // Apply CORS middleware globally
 app.use(cors(corsOptions));
 
 // Preflight handling for API routes (allow preflight OPTIONS requests)
 app.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*'); // Dynamically set the origin
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true'); // Allow credentials like cookies
     res.sendStatus(200);
 });
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

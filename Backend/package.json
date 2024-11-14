@@ -18,6 +18,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
     "firebase-admin": "^12.7.0",
+    "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^3.3.2",
     "textbelt": "^0.0.4",
