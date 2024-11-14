@@ -11,7 +11,7 @@ export default defineConfig({
                 target: 'https://fmtc-cycle-proj-one.vercel.app', // Backend URL on Vercel
                 changeOrigin: true,  // Handle the origin change
                 secure: true,        // Use HTTPS
-                rewrite: (path) => path.replace(/^\/api/, '/api/v1') // Add /v1 here to match the backend API version
+                rewrite: (path) => path.replace(/^\/api/, '/api/v1') // Add /v1 to match backend API version
             }
         }
     }

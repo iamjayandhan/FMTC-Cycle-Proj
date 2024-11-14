@@ -12,28 +12,30 @@ require('./utils/dbOnWatch')();
 
 const app = express();
 
-
+// Allowed Origins for CORS
 const allowedOrigins = [
-    'https://fmtc.vercel.app', // Frontend 1
-    'http://localhost:5173', // Frontend 2
-    'http://localhost:5174', // Frontend 2' // Frontend 3
+    'https://fmtc.vercel.app', // Frontend URL
+    'http://localhost:5173',   // Local Frontend (for development)
+    'http://localhost:5174'    // Another local Frontend if applicable
 ];
+
 // CORS Configuration
 const corsOptions = {
     origin: function (origin, callback) {
-        // Check if the origin is in the allowed origins list
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            callback(null, true); // Allow the request
+            callback(null, true); // Allow the request if origin is allowed
         } else {
-            callback(new Error('Not allowed by CORS'), false); // Reject the request
+            callback(new Error('Not allowed by CORS'), false); // Reject if not allowed
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow all methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers like Content-Type and Authorization
+    credentials: true,  // Allow cookies with requests
+    preflightContinue: false, // Ensure preflight responses are automatically handled
+    optionsSuccessStatus: 204 // For legacy browsers (especially IE)
 };
 
 app.use(cors(corsOptions)); // Use the CORS options
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
