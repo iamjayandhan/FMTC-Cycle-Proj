@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import mapImage from '../assets/finalMap.jpeg';
 import SA from '../assets/gps1.png';
+import bikeLogo from '../assets/bike.png';
+import BikeLoader from './BikeLoader';
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -21,6 +23,9 @@ const MainPage = () => {
   const [availableCount, setAvailableCount] = useState("");
   const [isCyclePopupVisible, setIsCyclePopupVisible] = useState(false);
 
+  // Loader
+  const [isLoading, setIsLoading] = useState(true);
+
   const stands = [
     { id: '1ef603aa-61cd-43fd-bcfa-c7e2cb657ca0', name: 'Stand A', top: '25.6%', left: '30.9%', image: SA }, //KGCAS
     { id: '8de75d9e-e105-44e4-a925-dbe7c1bbae6e', name: 'Stand B', top: '45.7%', left: '4.5%', image: SA }, //KGISL PARKING
@@ -34,13 +39,29 @@ const MainPage = () => {
 
   const handleClose = () => {
     setIsCyclePopupVisible(false);
-    setAvailableCount("");
-    setCycles([]);
   };
   
-  const handleStandClick = (standId) => setSelectedStand(standId.toString());
+  const handleStandClick = (standId) => 
+    {
+      setSelectedStand(standId.toString());
+      fetchCycleDetails(standId);
+    }
   
-  const handleDropdownChange = (event) => setSelectedStand(event.target.value);
+  const handleDropdownChange = (event) => {
+    setSelectedStand(event.target.value);
+    setIsCyclePopupVisible(false);
+  }
+
+  // Loader
+  useEffect(() => {
+    // Simulate loading time of 4 seconds
+    const timer = setTimeout(() => {
+      setIsLoading(false); // Hide loader after 4 seconds
+    }, 4000);
+
+    return () => clearTimeout(timer); // Clean up timer on unmount
+  }, []);
+
 
   // Adjust map width based on container size
   useEffect(() => {
@@ -70,14 +91,18 @@ const MainPage = () => {
       .catch(error => console.error("Error fetching user booking status:", error));
   }, []);
 
-  // Fetch cycle details for the selected stand
-  useEffect(() => {
-    if (selectedStand) {
-      console.log(selectedStand);
-      
-      const timer = setTimeout(() => {
-        console.log(selectedStand)
-        fetch(`http://localhost:8080/api/v1/stands/${selectedStand}`, {
+  // Define the fetchCycleDetails function
+  const fetchCycleDetails = (stand) => {
+    setIsLoading(true);
+
+    setCycles({});
+    setAvailableCount(0);
+
+    if (stand) {
+      console.log(stand);
+      setTimeout(() => {
+        console.log(stand);
+        fetch(`http://localhost:8080/api/v1/stands/${stand}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include'
@@ -87,21 +112,28 @@ const MainPage = () => {
             console.log(data.data);
             const { availability, cycles, standIdentity } = data.data;
             if (availability === 0) {
-              setStandIdentity(standIdentity)
+              setStandIdentity(standIdentity);
               setPopupDescription('No cycles available at this stand.');
+              setIsLoading(false);
               setIsCyclePopupVisible(true);
             } else if (availability > 0) {
               setCycles(cycles);
-              setStandIdentity(standIdentity)
+              setStandIdentity(standIdentity);
               setAvailableCount(Object.keys(cycles).length);
+              setIsLoading(false);
               setIsCyclePopupVisible(true);
             }
           })
           .catch(error => console.error("Error fetching cycle availability:", error));
       }, 2000);
-      return () => clearTimeout(timer);
     }
+  };
+
+  // Example of calling the function directly, passing in `selectedStand`
+  useEffect(() => {
+    fetchCycleDetails(selectedStand);
   }, [selectedStand]);
+
 
   const handleUnlockClick = (selectedStandId, cycleNumber) => {
     // Step 1: Find the stand object based on the selected stand ID
@@ -118,6 +150,9 @@ const MainPage = () => {
 
       console.log('standID:',standIdentity);
       console.log('cycleID:',cycleId);
+
+      setIsLoading(true);
+      setIsCyclePopupVisible(false);
       
       
       fetch(`http://localhost:8080/api/v1/cycles/unlock`, {
@@ -132,155 +167,174 @@ const MainPage = () => {
         .then(response => response.json())
         .then(data => {
           const { message, description } = data;
+          setIsLoading(false);
           setPopupDescription(
             message === 'ok'
-              ? `Cycle ${cycleId} at Stand ${standIdentity} unlocked successfully!`
-              : `Failed to unlock cycle ${cycleId} at Stand ${standIdentity}. ${description}`
+              ? `Cycle ${cycleNumber} at Stand ${standIdentity} unlocked successfully!`
+              : `Failed to unlock cycle ${cycleNumber} at Stand ${standIdentity}. ${description}`
           );
-          setIsCyclePopupVisible(true);
+          setIsPopupVisible(true);
           setTimeout(() => {
             window.location.reload();
-          }, 3000)
+          }, 4000)
         })
         .catch(error => {
+          setIsLoading(false);
           setPopupDescription('An error occurred while unlocking the cycle.');
-          setIsCyclePopupVisible(true);
+          setIsPopupVisible(true);
         });
     } else {
+      setIsLoading(false);
       setPopupDescription('Invalid stand or cycle selection.');
-      setIsCyclePopupVisible(true);
+      setIsPopupVisible(true);
     }
   };
   
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh',
-      padding: '20px', position: 'relative', backgroundColor: '#ffffff'
-    }}>
-      
+    <div className="min-h-screen flex flex-col items-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100">
       {/* Logout Button */}
-      <button onClick={handleLogout} style={{
-        position: 'absolute', top: '20px', right: '20px', backgroundColor: '#ff4b5c',
-        color: '#fff', border: 'none', borderRadius: '4px', padding: '8px 12px', cursor: 'pointer'
-      }}>Logout</button>
+      <header className="w-full flex justify-end p-4">
+        <button className="bg-blue-500 text-white py-1 px-4 rounded hover:bg-blue-600 transition duration-200" onClick={handleLogout}>
+          Logout
+        </button>
+      </header>
 
-      <h1 style={{ marginTop: '40px', textAlign: 'center', color: '#333' }}>Pedals</h1>
-      <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>Anytime Mobility</p>
 
-      {/* Map container with responsive sizing */}
-      <div ref={mapContainerRef} style={{
-        position: 'relative', width: '70vw', maxWidth: '700px', marginTop: '20px',
-        backgroundColor: 'white', borderRadius: '8px', border: '2px solid black',
-        overflow: 'hidden', height: 'auto'
-      }}>
-      <img src={mapImage} alt="College Map" style={{
-        width: '100%',
-        height: '50vh', // This will make the image height full screen
-        objectFit: 'cover',
-        borderRadius: '8px'
-      }} />
 
-        {/* Stand Placeholders */}
-        {stands.map((stand) => {
-          const placeholderSize = mapWidth * 0.14;
-          const isSelected = selectedStand === stand.id.toString();
-          return (
-            <div key={stand.id} onClick={() => handleStandClick(stand.id)} style={{
-              position: 'absolute', top: stand.top, left: stand.left,
-              width: `${placeholderSize}px`, height: `${placeholderSize}px`, cursor: 'pointer',
-              transform: 'translate(-50%, -50%)', display: 'flex', justifyContent: 'center', alignItems: 'center',
-              border: isSelected ? '3px solid green' : 'none', borderRadius: '8px',
-              // boxShadow: isSelected ? '0px 0px 5px 1px green' : 'none',
-            }}>
-              <img src={stand.image} alt={stand.name} onClick={(e) => {
-                e.stopPropagation(); handleStandClick(stand.id);
-              }} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }} />
-              <span style={{
-                position: 'absolute', top: '-35px', fontSize: 'clamp(12px, 2vw, 18px)', color: '#333',
-                width: '160%', backgroundColor: '#fff', padding: '2px 6px', borderRadius: '4px',
-                boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)', pointerEvents: 'none',
-              }}>{stand.name}</span>
-            </div>
-          );
-        })}
+      {/* Loader centered */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="flex flex-col items-center justify-center">
+            <BikeLoader />
+            <span className="mt-4 text-white text-2xl font-semibold">Fetching Necessary Details...</span>
+          </div>
+        </div>
+      )}
+  
+      {/* Title and Subtitle */}
+      <div className="text-center mb-8 md:mb-10 flex items-center justify-center">
+        <img src={bikeLogo} alt="Bike Logo" className="w-36 h-36 mr-4" />
+        <div>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-blue-400 mb-2 drop-shadow-lg">Pedals</h1>
+          <p className="text-lg md:text-xl font-medium text-gray-300 tracking-wide italic">"Anytime Mobility"</p>
+        </div>
       </div>
 
-      {/* Dropdown menu */}
-      <select value={selectedStand} onChange={handleDropdownChange} style={{
-        marginTop: '20px', padding: '5px', fontSize: '12px', borderRadius: '4px',
-        border: '1px solid #ccc', width: '25%', maxWidth: '200px', textAlign: 'center'
-      }}>
+
+
+      {/* Greeting and Stand Selection Prompt */}
+      <div className="text-center mb-1">
+        <p className="text-xl md:text-2xl font-semibold text-white">
+          Hello, welcome to Pedals!
+        </p>
+        <p className="text-md md:text-lg text-white mt-1">
+          Please select a stand to view available cycles.
+        </p>
+      </div>
+  
+      {/* Map Container */}
+      <div 
+  ref={mapContainerRef} 
+  className="relative w-[90vw] max-w-[700px] mt-2 bg-white border border-black overflow-x-auto md:overflow-hidden mx-auto"
+>
+  <div className="relative w-full min-w-[900px] md:min-w-full">
+    <img 
+      src={mapImage} 
+      alt="College Map" 
+      className="w-full h-[50vh] object-cover rounded-lg" 
+    />
+  
+    {/* Stand Placeholders */}
+    {stands.map((stand) => {
+      const placeholderSize = 40;
+      const isSelected = selectedStand === stand.id.toString();
+      return (
+        <div 
+          key={stand.id} 
+          onClick={() => handleStandClick(stand.id)} 
+          className={`absolute cursor-pointer flex justify-center items-center rounded-lg ${isSelected ? 'border-4 border-green-500' : ''}`}
+          style={{
+            top: stand.top,
+            left: stand.left,
+            width: `${placeholderSize}px`,
+            height: `${placeholderSize}px`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <img 
+            src={stand.image} 
+            alt={stand.name} 
+            className="w-full h-full object-contain rounded-lg"
+          />
+          <span className="absolute -top-7 w-[80px] text-gray-700 font-semibold bg-white px-2 py-1 rounded-md shadow-md text-sm text-center">
+            {stand.name}
+          </span>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+
+  
+      {/* Dropdown Menu */}
+      <select
+        value={selectedStand}
+        onChange={handleDropdownChange}
+        className="mt-5 px-1 py-1 text-sm border border-gray-400 rounded-md w-1/4 max-w-[200px] text-center bg-gray-700 text-gray-200"
+      >
         <option value="" disabled>Select</option>
         {stands.map((stand) => (
           <option key={stand.id} value={stand.id}>{stand.name}</option>
         ))}
       </select>
-
-      {/* User booking popup */}
+  
+      {/* User Booking Popup */}
       {isPopupVisible && (
-        <div style={{
-          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
-          padding: '20px', zIndex: 1000, maxWidth: '200px'
-        }}>
-          <h2 style={{ marginBottom: '10px', color: '#333' }}>Alert</h2>
-          <p style={{
-            color: '#666', maxWidth: '200px', wordWrap: 'break-word',
-            overflowWrap: 'break-word', textAlign: 'center', margin: '10px 0'
-          }}>{popupDescription}</p>
-          <button onClick={() => navigate('/login')} style={{
-            backgroundColor: '#ff4b5c', color: '#fff', border: 'none', borderRadius: '4px',
-            padding: '8px 12px', cursor: 'pointer', marginTop: '10px', width: '100%'
-          }}>OK</button>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-6 z-50 w-[90%] max-w-[300px] text-center">
+          <h2 className="text-xl font-bold text-gray-700 mb-2">Alert</h2>
+          <p className="text-gray-500 mb-4">{popupDescription}</p>
+          <button 
+            onClick={() => navigate('/login')} 
+            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
+          >
+            OK
+          </button>
         </div>
       )}
-
-      {/* Cycle availability popup */}
+  
+      {/* Cycle Availability Popup */}
       {isCyclePopupVisible && (
-        <div style={{
-          position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.5)',
-          padding: '20px', zIndex: 1000, maxWidth: '400px'
-        }}>
-          <h2 style={{ marginBottom: '10px', color: '#333' }}>{`Stand: ${standIdentity}`}</h2>
-          <p style={{ color: '#666', textAlign: 'center', fontSize: 'clamp(10px, 2vw, 14px)' }}>
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg p-4 z-50 w-[80%] max-w-[400px]">
+          <h2 className="text-xl font-bold text-gray-700 mb-2">{`Stand: ${standIdentity}`}</h2>
+          <p className="text-gray-500 text-m font-bold text-center mb-4">
             {availableCount ? `Available Cycles: ${availableCount}` : 'No cycles available at this stand.'}
           </p>
-          <ul style={{
-            display: 'flex', flexWrap: 'wrap', justifyContent: 'center', padding: 0,
-            listStyle: 'none', gap: '10px', fontSize: 'clamp(12px, 2vw, 16px)'
-          }}>
+          <ul className="flex flex-wrap justify-center gap-4 mb-4">
             {Object.entries(cycles).map(([cycleName, cycleId]) => (
-              <li key={cycleId} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between', 
-                backgroundColor: '#ff4b5c', color: '#fff', borderRadius: '4px',
-                padding: '3px 15px', minWidth: '40%', textAlign: 'center', marginBottom: '8px'
-              }}>
+              <li key={cycleId} className="flex items-center justify-between bg-red-500 text-white rounded-md px-4 py-2 min-w-[40%]">
                 <span>{'C' + cycleName}</span>
                 <button 
                   onClick={() => handleUnlockClick(selectedStand, cycleName)}
-                  style={{
-                    backgroundColor: '#333', color: '#fff', border: 'none', borderRadius: '4px',
-                    padding: '4px 8px', cursor: 'pointer', marginLeft: '10px'
-                  }}
+                  className="bg-gray-800 text-white px-3 py-1 rounded-md ml-2"
                 >
                   Unlock
                 </button>
               </li>
             ))}
-
           </ul>
-          <button onClick={handleClose} style={{
-            backgroundColor: '#ccc', color: '#333', border: 'none', borderRadius: '4px',
-            padding: '4px 12px', cursor: 'pointer', marginTop: '10px', width: '50%'
-          }}>
+          <button 
+            onClick={handleClose} 
+            className="w-1/2 bg-gray-300 text-gray-800 py-2 rounded-md mx-auto"
+          >
             Close
           </button>
         </div>
       )}
     </div>
   );
+  
 };
 
 export default MainPage;

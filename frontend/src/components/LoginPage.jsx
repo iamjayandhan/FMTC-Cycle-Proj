@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import bikeLogo from '../assets/bike.png';
+import BikeLoader from './BikeLoader';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 console.log(apiUrl);
@@ -10,6 +11,8 @@ console.log(apiUrl);
 const LoginPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ rollNumber: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false); // State for the loader
+
 
   const handleInputChange = (e) => {
     setFormData({
@@ -20,6 +23,7 @@ const LoginPage = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch(`${apiUrl}/users/login`, {
@@ -37,6 +41,7 @@ const LoginPage = () => {
           autoClose: 2000,
         });
         setTimeout(() => {
+          setIsLoading(false);
           navigate('/main');
         }, 2000);
       } else {
@@ -46,6 +51,7 @@ const LoginPage = () => {
           position: 'top-center',
           autoClose: 3000,
         });
+        setIsLoading(false); 
       }
     } catch (error) {
       console.error('Login error:', error);
@@ -53,6 +59,7 @@ const LoginPage = () => {
         position: 'top-center',
         autoClose: 3000,
       });
+      setIsLoading(false);
     }
   };
 
@@ -64,12 +71,26 @@ const LoginPage = () => {
     <>
       <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
       <div className="text-center mb-8 md:mb-10 flex items-center justify-center">
-  <img src={bikeLogo} alt="Bike Logo" className="w-32 h-32 mr-4" />
-  <div>
-    <h1 className="text-4xl md:text-5xl font-extrabold text-blue-400 mb-2 drop-shadow-lg">Pedals</h1>
-    <p className="text-lg md:text-xl font-medium text-gray-300 tracking-wide italic">"Anytime Mobility"</p>
-  </div>
-</div>
+
+
+         {/* Loader */}
+       {/* Loader Screen */}
+       {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50 opacity-100 transition-opacity duration-4000">
+          <div className="flex flex-col items-center">
+            <BikeLoader/>
+            <span className="mt-2 text-white text-2xl font-semibold">Getting you ready to ride... almost there!</span>
+          </div>
+        </div>
+      )}
+
+            
+      <img src={bikeLogo} alt="Bike Logo" className="w-32 h-32 mr-4" />
+      <div>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-blue-400 mb-2 drop-shadow-lg">Pedals</h1>
+        <p className="text-lg md:text-xl font-medium text-gray-300 tracking-wide italic">"Anytime Mobility"</p>
+      </div>
+    </div>
 
 
         <div className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-6 sm:p-8 bg-gray-800 shadow-xl rounded-lg">
