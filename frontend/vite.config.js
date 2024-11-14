@@ -7,7 +7,7 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'https://fmtc-cycle-proj-one.vercel.app',  // Backend URL
+                target: 'https://fmtc-cycle-proj-fgpt5rgfm-guruprasath-vs-projects.vercel.app',  // Backend URL
                 changeOrigin: true,  // Handle origin change
                 secure: true,        // Use HTTPS
                 rewrite: (path) => path.replace(/^\/api/, '/api/v1')  // Match API version
