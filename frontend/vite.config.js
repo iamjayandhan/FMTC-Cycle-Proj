@@ -6,7 +6,7 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'https://fmtc-cycle-proj-one.vercel.app', // Correct backend URL without `/api/v1`
+                target: 'https://fmtc-cycle-proj-one.vercel.app/api/v1', // Correct backend URL without `/api/v1`
                 changeOrigin: true,
                 secure: true,
                 rewrite: (path) => path.replace(/^\/api/, '/api/v1') // Add `/api/v1` to the proxied path
