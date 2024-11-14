@@ -22,11 +22,22 @@ const allowedOrigins = [
 // CORS Configuration
 // CORS middleware options
 const corsOptions = {
-    origin: 'https://fmtc.vercel.app',  // Allow only the frontend domain
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true); // Allow the request
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,  // Allow cookies to be sent with requests (if needed)
-    allowedHeaders: ['Content-Type', 'Authorization']  // Ensure correct headers are allowed
+    credentials: true, // Allow cookies to be sent with requests (if needed)
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
+
+// Preflight handling for API routes
+app.options('/api/v1/*', cors(corsOptions));  // Allow preflight for all routes
+
+
 
 // Apply CORS middleware globally
 app.use(cors(corsOptions));
