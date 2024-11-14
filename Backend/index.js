@@ -20,9 +20,9 @@ const allowedOrigins = [
 ];
 
 // CORS Configuration
-// CORS middleware options
 const corsOptions = {
     origin: (origin, callback) => {
+        // Allow requests from these origins
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true); // Allow the request
         } else {
@@ -31,19 +31,14 @@ const corsOptions = {
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true, // Allow cookies to be sent with requests (if needed)
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
 };
-
-// Preflight handling for API routes
-app.options('/api/v1/*', cors(corsOptions));  // Allow preflight for all routes
-
-
 
 // Apply CORS middleware globally
 app.use(cors(corsOptions));
 
-app.options('*', cors(corsOptions));  // Allow preflight for all routes
-
+// Preflight handling for API routes (allow preflight OPTIONS requests)
+app.options('/api/v1/*', cors(corsOptions)); // Allow preflight for all API routes
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

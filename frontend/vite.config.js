@@ -6,12 +6,11 @@ export default defineConfig({
     plugins: [react()],
     server: {
         proxy: {
-            // Proxy all requests starting with /api to the backend
             '/api': {
-                target: 'https://fmtc-cycle-proj-one.vercel.app', // Backend URL on Vercel
-                changeOrigin: true,  // Handle the origin change
+                target: 'https://fmtc-cycle-proj-one.vercel.app',  // Backend URL
+                changeOrigin: true,  // Handle origin change
                 secure: true,        // Use HTTPS
-                rewrite: (path) => path.replace(/^\/api/, '/api/v1') // Add /v1 to match backend API version
+                rewrite: (path) => path.replace(/^\/api/, '/api/v1')  // Match API version
             }
         }
     }
