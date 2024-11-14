@@ -20,22 +20,19 @@ const allowedOrigins = [
 ];
 
 // CORS Configuration
+// CORS middleware options
 const corsOptions = {
-    origin: function (origin, callback) {
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            callback(null, true); // Allow the request if origin is allowed
-        } else {
-            callback(new Error('Not allowed by CORS'), false); // Reject if not allowed
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow all methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allow headers like Content-Type and Authorization
-    credentials: true,  // Allow cookies with requests
-    preflightContinue: false, // Ensure preflight responses are automatically handled
-    optionsSuccessStatus: 204 // For legacy browsers (especially IE)
+    origin: 'https://fmtc.vercel.app',  // Allow only the frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,  // Allow cookies to be sent with requests (if needed)
+    allowedHeaders: ['Content-Type', 'Authorization']  // Ensure correct headers are allowed
 };
 
-app.use(cors(corsOptions)); // Use the CORS options
+// Apply CORS middleware globally
+app.use(cors(corsOptions));
+
+app.options('*', cors(corsOptions));  // Allow preflight for all routes
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
