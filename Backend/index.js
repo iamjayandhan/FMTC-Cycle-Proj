@@ -15,11 +15,9 @@ const app = express();
 
 const corsOptions = {
     origin: [
+        'https://amazing-melba-61b994.netlify.app/',
         'https://fmtc.vercel.app',           // Frontend URL
-        'http://localhost:5173',             // Local frontend (Vite)
-        'http://localhost:5174',             // Another local frontend (if applicable)
-        'http://192.168.253.54:5173',       // Mobile device on local network
-        'http://192.168.253.54:8080'        // Your backend server on local network (adjust as needed)
+        'http://localhost:5173',             // Local frontend (Vite)           // Another local frontend (if applicable)      // Your backend server on local network (adjust as needed)
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true // Allows cookies to be sent with requests
