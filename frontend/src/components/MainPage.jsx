@@ -4,6 +4,8 @@ import mapImage from '../assets/finalMap.jpeg';
 import SA from '../assets/gps1.png';
 import bikeLogo from '../assets/bike.png';
 import BikeLoader from './BikeLoader';
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -74,7 +76,7 @@ const MainPage = () => {
 
   // Fetch user booking status on component mount
   useEffect(() => {
-    fetch(`http://localhost:8080/api/v1/users/main`, {
+    fetch(`${apiUrl}/users/main`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -102,7 +104,7 @@ const MainPage = () => {
       console.log(stand);
       setTimeout(() => {
         console.log(stand);
-        fetch(`http://localhost:8080/api/v1/stands/${stand}`, {
+        fetch(`${apiUrl}/stands/${stand}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include'
@@ -155,7 +157,7 @@ const MainPage = () => {
       setIsCyclePopupVisible(false);
       
       
-      fetch(`http://localhost:8080/api/v1/cycles/unlock`, {
+      fetch(`${apiUrl}/cycles/unlock`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
