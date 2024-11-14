@@ -6,10 +6,10 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://fmtc-cycle-proj-one.vercel.app/api/v1',
+        target: 'https://fmtc-cycle-proj-one.vercel.app',
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, '/api/v1'),  // Adjusts `/api/...` to `/api/v1/...`
       }
     }
   }

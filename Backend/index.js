@@ -14,17 +14,15 @@ const app = express();
 
 // CORS Configuration
 app.use(cors({
-  origin: 'https://fmtc.vercel.app',  // Frontend URL
-  methods: 'GET,POST,PUT,OPTIONS',   // Include OPTIONS for preflight
-  credentials: true                  // Allow cookies with CORS
+    origin: 'https://fmtc.vercel.app',  // The frontend URL
+    methods: ['GET', 'POST', 'PUT', 'OPTIONS'],
+    credentials: true,  // Allows cookies and headers for cross-origin requests
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Explicitly set allowed headers
 }));
 
 // Manually handle preflight requests
-app.options('*', cors({
-  origin: 'https://fmtc.vercel.app',
-  methods: 'GET,POST,PUT,OPTIONS',
-  credentials: true
-}));
+app.options('*', cors());  // Enables CORS for preflight OPTIONS requests
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
