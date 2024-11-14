@@ -1,4 +1,3 @@
-// vite.config.js
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
@@ -7,15 +6,11 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: 'https://fmtc-cycle-proj-one.vercel.app', // Backend URL on Vercel
+                target: 'https://fmtc-cycle-proj-one.vercel.app', // Correct backend URL without `/api/v1`
                 changeOrigin: true,
                 secure: true,
-                rewrite: (path) => path.replace(/^\/api/, '/api/v1') // Add /v1 here to match the backend's versioned route
+                rewrite: (path) => path.replace(/^\/api/, '/api/v1') // Add `/api/v1` to the proxied path
             }
-        },
-        cors: {
-            origin: 'https://fmtc.vercel.app', // Ensure this matches your Vercel frontend
-            credentials: true
         }
     }
 });
