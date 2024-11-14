@@ -111,7 +111,8 @@ async function userLogin(req, res, next) {
         res.cookie('JTOK', token, { 
             maxAge: 1000 * 60 * 60 * 2, 
             httpOnly: true,
-            // secure: process.env.NODE_ENV === 'production'
+            secure: true,
+            sameSite: 'none'
         });
 
         res.status(200).json({
