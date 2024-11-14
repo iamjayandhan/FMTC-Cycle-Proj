@@ -108,12 +108,13 @@ async function userLogin(req, res, next) {
 
         const token = genToken(response.data);
 
-        res.cookie('JTOK', token, { 
-            maxAge: 1000 * 60 * 60 * 2, 
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none'
+        res.cookie('JTOK', token, {
+            httpOnly: true,   // Ensures it's not accessible via JavaScript
+            secure: true,     // Ensures it's sent over HTTPS
+            sameSite: 'Lax',  // Allows cross-origin requests with cookies
+            maxAge: 3600000   // Optional: Expiry time of the cookie (e.g., 1 hour)
         });
+        
 
         res.status(200).json({
             message: 'User logged in successfully.',

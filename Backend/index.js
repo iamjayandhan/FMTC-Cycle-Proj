@@ -22,17 +22,12 @@ const allowedOrigins = [
 
 // CORS Configuration
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true); // Allow the request
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: ['https://fmtc.vercel.app'], // Frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true, // Allow cookies to be sent with requests (if needed)
-    allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
+    credentials: true,  // Allows cookies to be sent
+    allowedHeaders: ['Content-Type', 'Authorization']
 };
+
 
 // Apply Helmet middleware for security headers
 app.use(helmet());
