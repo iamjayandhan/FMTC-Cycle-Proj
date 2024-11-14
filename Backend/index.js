@@ -38,7 +38,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Preflight handling for API routes (allow preflight OPTIONS requests)
-app.options('/api/v1/*', cors(corsOptions)); // Allow preflight for all API routes
+app.options('*', (req, res) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.sendStatus(200);
+});
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
