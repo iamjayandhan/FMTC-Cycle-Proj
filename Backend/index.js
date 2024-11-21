@@ -19,9 +19,16 @@ const app = express();
 //   credentials: true, // Allows cookies to be sent with requests
 
 // };
+const corsOptions = {
+  origin: "https://fmtc.vercel.app", // Allow only your frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+  credentials: true, // Allow cookies if required
+};
 
 // Apply CORS middleware globally in your Express app
-app.use(cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
