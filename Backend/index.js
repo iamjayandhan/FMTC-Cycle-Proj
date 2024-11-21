@@ -13,14 +13,15 @@ require("./utils/dbOnWatch")();
 
 const app = express();
 
-const corsOptions = {
-  origin: new RegExp("https://fmtc.vercel.app*", "ig"), // Frontend URL           // Local frontend (Vite)           // Another local frontend (if applicable)      // Your backend server on local network (adjust as needed)
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true, // Allows cookies to be sent with requests
-};
+// const corsOptions = {
+//   origin: new RegExp("https://fmtc.vercel.app*", "ig"), // Frontend URL           // Local frontend (Vite)           // Another local frontend (if applicable)      // Your backend server on local network (adjust as needed)
+//   methods: ,
+//   credentials: true, // Allows cookies to be sent with requests
+
+// };
 
 // Apply CORS middleware globally in your Express app
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
