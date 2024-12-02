@@ -30,6 +30,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
+// Helmet for security
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false, // Ensure compatibility with CORS
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
