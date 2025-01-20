@@ -5,6 +5,7 @@ import SA from '../assets/gps1.png';
 import bikeLogo from '../assets/bike.png';
 import BikeLoader from './BikeLoader';
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// import './MainPage.css';
 
 
 const MainPage = () => {
