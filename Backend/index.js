@@ -13,7 +13,7 @@ require("./utils/dbOnWatch")();
 const app = express();
 
 app.use((req, res, next) => {
-  const allowedOrigins = ["https://fmtc.vercel.app", "http://localhost:5173"];
+  const allowedOrigins = ["http://localhost:5173", "https://fmtc-cycle-proj-ue83-b8ey3xxfu-iamjayandhans-projects.vercel.app", "https://fmtc-cycle-proj-ue83-git-main-iamjayandhans-projects.vercel.app"];
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
