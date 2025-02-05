@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import mapImage from '../assets/finalMap.jpeg';
-import SA from '../assets/gps1.png';
-import bikeLogo from '../assets/bike.png';
-import BikeLoader from './BikeLoader';
+import mapImage from '../../assets/finalMap.jpeg';
+import SA from '../../assets/gps1.png';
+import bikeLogo from '../../assets/bike.png';
+import BikeLoader from '../BikeLoader/BikeLoader';
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 // import './MainPage.css';
 

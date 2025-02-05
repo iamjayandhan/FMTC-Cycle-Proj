@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import bikeLogo from '../assets/bike.png';
-import BikeLoader from './BikeLoader';
+import bikeLogo from '../../assets/bike.png';
+import BikeLoader from '../BikeLoader/BikeLoader';
 // import './login.css';
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
