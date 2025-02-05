@@ -3,7 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-const userRoutes = require("./routes/userRoutes");
+const userRoutes = require("./routes/userRoutes.js");
 const standRoutes = require("./routes/standRoutes");
 const cycleRoutes = require("./routes/cycleRoutes");
 const errorHandlingMiddleware = require("./middlewares/errorHandlingMiddleware");
