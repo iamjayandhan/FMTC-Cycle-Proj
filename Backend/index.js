@@ -37,7 +37,7 @@ const app = express();
 
 // };
 const corsOptions = {
-  origin: ["https://fmtc.vercel.app", "http://localhost:5173"], // Allow only your frontend domain
+  origin: ["https://fmtc-cycle-proj-fe.vercel.app/", "https://fmtc-cycle-proj-fe-git-main-iamjayandhans-projects.vercel.app/", "https://fmtc-cycle-proj-k368mmzf3-iamjayandhans-projects.vercel.app/", "http://localhost:5173"], // Allow only your frontend domain
   methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
   allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
   credentials: true, // Allow cookies if required
