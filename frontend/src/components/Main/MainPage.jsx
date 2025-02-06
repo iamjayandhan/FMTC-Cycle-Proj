@@ -79,7 +79,7 @@ const MainPage = () => {
   useEffect(() => {
     fetch(`${apiUrl}/users/main`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json'},
       credentials: 'include',
     })
       .then(response => response.json())
@@ -107,7 +107,7 @@ const MainPage = () => {
         console.log(stand);
         fetch(`${apiUrl}/stands/${stand}`, {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json'},
           credentials: 'include'
         })
           .then(response => response.json())
@@ -160,7 +160,7 @@ const MainPage = () => {
       
       fetch(`${apiUrl}/cycles/unlock`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',},
         body: JSON.stringify({
           standIdentity: standIdentity,
           cycleId: cycleId
